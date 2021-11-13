@@ -1,10 +1,11 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=43 format=2]
 
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://character_display.gd" type="Script" id=2]
 [ext_resource path="res://Minifantasy_CreaturesHumanBaseAnimations.png" type="Texture" id=3]
 [ext_resource path="res://DragonIdle.png" type="Texture" id=4]
 [ext_resource path="res://Minifantasy_GuiPanelsAndSlotsBlue.png" type="Texture" id=5]
+[ext_resource path="res://CharacterDie.tscn" type="PackedScene" id=6]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 5 )
@@ -207,3 +208,5 @@ frames = SubResource( 36 )
 animation = "New Anim 1"
 frame = 13
 playing = true
+
+[node name="CharacterDie" parent="." instance=ExtResource( 6 )]
