@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://actions/action.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+name = "Attack"
+targets = 1
+level = 1
+hostile = true
+base_amount = 1
+heal = false
+block = false
+damage = true
