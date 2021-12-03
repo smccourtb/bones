@@ -1,0 +1,120 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://character_unit.gd" type="Script" id=2]
+[ext_resource path="res://HumanAnim.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/ui/panels_green.png" type="Texture" id=5]
+
+[sub_resource type="AtlasTexture" id=1]
+resource_local_to_scene = true
+flags = 16
+atlas = ExtResource( 5 )
+region = Rect2( 264, 120, 64, 32 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 12
+font_data = ExtResource( 1 )
+
+[sub_resource type="AtlasTexture" id=3]
+resource_local_to_scene = true
+flags = 16
+atlas = ExtResource( 5 )
+region = Rect2( 120, 8, 32, 32 )
+
+[node name="CharacterUnit" type="Control" groups=[
+"player",
+]]
+margin_right = 120.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 120, 50 )
+rect_scale = Vector2( 0.75, 0.75 )
+mouse_filter = 2
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CharacterDisplay" type="NinePatchRect" parent="."]
+margin_right = 110.0
+margin_bottom = 47.0
+mouse_filter = 0
+texture = SubResource( 1 )
+patch_margin_left = 42
+patch_margin_top = 16
+patch_margin_right = 42
+patch_margin_bottom = 16
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CharacterDisplay"]
+anchor_right = 1.0
+margin_left = 33.0
+margin_top = 11.0
+margin_right = -16.0
+margin_bottom = 21.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = 1
+custom_constants/shadow_offset_y = 1
+text = "Human"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CharacterContainer" type="NinePatchRect" parent="CharacterDisplay"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = -7.0
+margin_top = -24.0
+margin_right = 41.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 32, 32 )
+texture = SubResource( 3 )
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Human" parent="CharacterDisplay/CharacterContainer" instance=ExtResource( 3 )]
+
+[node name="Tween" type="Tween" parent="CharacterDisplay"]
+playback_speed = 5.22
+playback/speed = 5.22
+
+[node name="StatContainer" type="GridContainer" parent="CharacterDisplay"]
+margin_left = 36.1573
+margin_top = 22.1573
+margin_right = 87.1573
+margin_bottom = 38.1573
+custom_constants/vseparation = 0
+custom_constants/hseparation = 0
+columns = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionChoice" type="TextureRect" parent="CharacterDisplay"]
+margin_left = 91.6209
+margin_top = 18.2899
+margin_right = 107.621
+margin_bottom = 34.2899
+rect_scale = Vector2( 0.75, 0.75 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Position2D" type="Position2D" parent="."]
+position = Vector2( 125, 24 )
+__meta__ = {
+"_gizmo_extents_": 21.7
+}
+
+[connection signal="gui_input" from="CharacterDisplay" to="." method="_on_CharacterDisplay_gui_input"]
+[connection signal="tween_all_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_all_completed"]

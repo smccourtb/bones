@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+
+[node name="CSGBox" type="CSGBox"]
+transform = Transform( 37.8839, 0, 0, 0, 1, 0, 0, 0, 13.2053, -2.91355, -9.78817, 2.51584 )
+use_collision = true
+depth = 6.81218
+material = SubResource( 1 )

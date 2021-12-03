@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://units.gd" type="Script" id=3]
+[ext_resource path="res://character_resources/human.tres" type="Resource" id=4]
+[ext_resource path="res://loadouts/player/basic_player.tres" type="Resource" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[node name="Units" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+player_loadout = ExtResource( 5 )
+enemy_loadout = {
+"5": ExtResource( 4 )
+}
+
+[node name="PlayerUnits" type="VBoxContainer" parent="."]
+margin_left = 10.0
+margin_top = 50.0
+margin_right = 150.0
+margin_bottom = 222.0
+rect_min_size = Vector2( 0, 206 )
+mouse_filter = 2
+custom_constants/separation = -11
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyUnits" type="VBoxContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -150.0
+margin_top = 50.0
+margin_right = -10.0
+margin_bottom = 256.0
+grow_horizontal = 0
+rect_min_size = Vector2( 0, 206 )
+custom_constants/separation = 0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnOwnerLabel" type="Label" parent="."]
+margin_left = 308.651
+margin_top = 243.475
+margin_right = 348.651
+margin_bottom = 268.475
+custom_fonts/font = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PhaseLabel" type="Label" parent="."]
+margin_left = 183.168
+margin_top = 244.599
+margin_right = 223.168
+margin_bottom = 269.599
+custom_fonts/font = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

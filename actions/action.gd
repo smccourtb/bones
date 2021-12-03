@@ -9,5 +9,6 @@ export var base_amount: int
 export var heal: bool
 export var block: bool
 export var damage: bool
+export var texture: Texture
 
 

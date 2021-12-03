@@ -17,16 +17,23 @@ _global_script_classes=[ {
 "base": "Resource",
 "class": "Character",
 "language": "GDScript",
-"path": "res://character.gd"
+"path": "res://character_resources/character.gd"
+}, {
+"base": "Resource",
+"class": "Loadout",
+"language": "GDScript",
+"path": "res://loadouts/party_loadout.gd"
 } ]
 _global_script_class_icons={
 "Action": "",
-"Character": ""
+"Character": "",
+"Loadout": ""
 }
 
 [application]
 
 config/name="Bones"
+run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -39,27 +46,18 @@ window/dpi/allow_hidpi=true
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
 
+[gui]
+
+theme/use_hidpi=true
+
 [importer_defaults]
 
 texture={
-"compress/bptc_ldr": 0,
-"compress/hdr_mode": 0,
-"compress/lossy_quality": 0.7,
-"compress/mode": 0,
-"compress/normal_map": 0,
+"compress/normal_map": 1,
 "detect_3d": false,
-"flags/anisotropic": false,
 "flags/filter": false,
-"flags/mipmaps": false,
-"flags/repeat": 0,
-"flags/srgb": 2,
-"process/HDR_as_SRGB": false,
-"process/fix_alpha_border": true,
-"process/invert_color": false,
-"process/premult_alpha": false,
-"size_limit": 0,
-"stream": false,
-"svg/scale": 1.0
+"flags/srgb": 1,
+"process/HDR_as_SRGB": true
 }
 
 [physics]
@@ -70,4 +68,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+quality/driver/driver_name="GLES2"
 environment/default_environment="res://default_env.tres"

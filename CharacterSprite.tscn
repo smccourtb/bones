@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="Sprite" type="Sprite"]
+position = Vector2( 23, 23.8333 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
