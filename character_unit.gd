@@ -153,11 +153,15 @@ func _on_ActionSelected(who):
 	
 func set_selected(new_value: bool):
 	if new_value:
-		sprite.play("Selected")
+		tween.interpolate_property($CharacterDisplay, "rect_position",
+		$CharacterDisplay.rect_position, Vector2($CharacterDisplay.rect_position.x+25, $CharacterDisplay.rect_position.y), .3,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	
 	else:
-		sprite.get_parent().set_modulate(Color(1,1,1))
-		sprite.play("Idle")
-
+		tween.interpolate_property($CharacterDisplay, "rect_position",
+		$CharacterDisplay.rect_position, Vector2($CharacterDisplay.rect_position.x-25, $CharacterDisplay.rect_position.y), .3,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
 func action():
 	if face_choice.hostile:
 		sprite.play("Attack")
