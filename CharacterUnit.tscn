@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://character_unit.gd" type="Script" id=2]
 [ext_resource path="res://HumanAnim.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/ui/ui-selectors.png" type="Texture" id=4]
 [ext_resource path="res://assets/ui/panels_green.png" type="Texture" id=5]
 
 [sub_resource type="AtlasTexture" id=1]
@@ -11,13 +12,13 @@ flags = 16
 atlas = ExtResource( 5 )
 region = Rect2( 264, 120, 64, 32 )
 
-[sub_resource type="AtlasTexture" id=3]
+[sub_resource type="AtlasTexture" id=2]
 resource_local_to_scene = true
 flags = 16
 atlas = ExtResource( 5 )
 region = Rect2( 120, 8, 32, 32 )
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=3]
 resource_name = "targetable"
 loop = true
 tracks/0/type = "value"
@@ -33,7 +34,7 @@ tracks/0/keys = {
 "values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
 }
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=4]
 size = 12
 font_data = ExtResource( 1 )
 
@@ -42,6 +43,11 @@ resource_local_to_scene = true
 flags = 16
 atlas = ExtResource( 5 )
 region = Rect2( 8, 8, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 16
+atlas = ExtResource( 4 )
+region = Rect2( 32, 48, 16, 16 )
 
 [node name="CharacterUnit" type="Control" groups=[
 "player",
@@ -82,7 +88,7 @@ rect_min_size = Vector2( 32, 32 )
 rect_scale = Vector2( 1.02749, 1.02749 )
 rect_pivot_offset = Vector2( 24, 24 )
 rect_clip_content = true
-texture = SubResource( 3 )
+texture = SubResource( 2 )
 patch_margin_left = 16
 patch_margin_top = 16
 patch_margin_right = 16
@@ -94,7 +100,7 @@ __meta__ = {
 [node name="Human" parent="CharacterDisplay/CharacterContainer" instance=ExtResource( 3 )]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterDisplay/CharacterContainer"]
-anims/targetable = SubResource( 4 )
+anims/targetable = SubResource( 3 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CharacterDisplay"]
 anchor_left = 0.5
@@ -113,7 +119,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer"]
 margin_right = 54.0
 margin_bottom = 10.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 4 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
 custom_constants/shadow_offset_y = 1
@@ -160,6 +166,20 @@ margin_left = -8.00005
 margin_top = -8.0
 margin_right = 8.00005
 margin_bottom = 8.0
+mouse_filter = 2
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Targeted" type="TextureRect" parent="CharacterDisplay/TextureRect"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 20, 20 )
+mouse_filter = 2
+texture = SubResource( 6 )
+expand = true
 stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
@@ -170,6 +190,10 @@ playback_speed = 5.22
 playback/speed = 5.22
 
 [node name="Action" type="Tween" parent="CharacterDisplay"]
+
+[node name="TargetGrow" type="Tween" parent="CharacterDisplay"]
+
+[node name="TargetShrink" type="Tween" parent="CharacterDisplay"]
 
 [node name="Position2D" type="Position2D" parent="."]
 position = Vector2( 124, 24 )
@@ -183,3 +207,5 @@ __meta__ = {
 [connection signal="mouse_entered" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_entered"]
 [connection signal="mouse_exited" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_exited"]
 [connection signal="tween_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_completed"]
+[connection signal="tween_completed" from="CharacterDisplay/TargetGrow" to="." method="_on_TargetGrow_tween_completed"]
+[connection signal="tween_completed" from="CharacterDisplay/TargetShrink" to="." method="_on_TargetShrink_tween_completed"]

@@ -7,22 +7,24 @@ signal target_phase_end
 signal combat_phase_begin
 signal combat_phase_end
 
-
 var rerolls: int = 2
 var round_num: int = 1
 var turn_owner: bool = false # if true player turn, false: enemy
-var turn_phase: int = 0 
 var roll_phase: bool = false
 var target_phase: bool = false
 var combat_phase: bool = false
 
+# node references
 onready var units = $Units
 onready var players = get_node("Units/PlayerUnits")
 onready var enemies = get_node("Units/EnemyUnits")
 
+
 func _ready() -> void:
 	setup_signals()
+	randomize()
 	emit_signal("roll_phase_begin")
+
 
 func _physics_process(_delta: float) -> void:
 	units.turn_label.text = "Player Turn" if turn_owner else "Enemy Turn"
@@ -37,13 +39,15 @@ func _on_Button_pressed() -> void:
 		die.set_gravity_scale(4)
 		die.apply_impulse(die.translation, Vector3(randi() % 5 + .5,randi() % 5 + .5,randi() % 5 + .5))
 
+
 func set_reroll(amount) -> void:
 	rerolls -= amount
 	if rerolls <= 0:
 		$Button.set_disabled(true)
 		rerolls = 0
 
-func _on_Roll_Phase_Begin():
+
+func _on_Roll_Phase_Begin() -> void:
 	print("Entering ROLL PHASE")
 	roll_phase = true
 	Global.turn_phase = "roll"
@@ -56,7 +60,8 @@ func _on_Roll_Phase_Begin():
 		yield(get_tree().create_timer(4.0), "timeout")
 		emit_signal("roll_phase_end")
 
-func _on_Roll_Phase_End():
+
+func _on_Roll_Phase_End() -> void:
 	print("EXITING ROLL PHASE")
 	if turn_owner:
 		for i in players.get_children():
@@ -70,7 +75,8 @@ func _on_Roll_Phase_End():
 	roll_phase = false
 	emit_signal("target_phase_begin")
 
-func _on_targetPhase_begin():
+
+func _on_targetPhase_begin() -> void:
 	print("ENTERING TARGET PHASE")
 	target_phase = true
 	Global.turn_phase = "target"
@@ -81,7 +87,7 @@ func _on_targetPhase_begin():
 				i.set_target_selected(true)
 		yield(units, "targets_selected")
 		emit_signal("target_phase_end")
-		
+	
 	if !turn_owner:
 		for i in enemies.get_children():
 			if i.face_choice.name != "Miss":
@@ -91,7 +97,8 @@ func _on_targetPhase_begin():
 #		turn_owner = !turn_owner
 		emit_signal("target_phase_end")
 
-func _on_targetPhase_end():
+
+func _on_targetPhase_end() -> void:
 	print("EXITING TARGET PHASE")
 	target_phase = false
 	if turn_owner:
@@ -100,7 +107,8 @@ func _on_targetPhase_end():
 		turn_owner = !turn_owner
 		emit_signal("roll_phase_begin")
 
-func _on_combatPhase_begin():
+
+func _on_combatPhase_begin() -> void:
 	print("ENTERING COMBAT PHASE")
 	combat_phase = true
 	Global.turn_phase = "combat"
@@ -128,7 +136,8 @@ func _on_combatPhase_begin():
 				yield(get_tree().create_timer(2.0), "timeout")
 		emit_signal("combat_phase_end")
 
-func _on_combatPhase_end():
+
+func _on_combatPhase_end() -> void:
 	print("EXITING COMBAT PHASE")
 	round_num +=1
 	rerolls = 2
@@ -141,20 +150,25 @@ func _on_combatPhase_end():
 	# reset actions
 	# increase round num
 	for i in units.unit_refs:
-		i.reset()
-	combat_phase = false
+		if is_instance_valid(i):
+			i.reset()
+			
+	
 	if check_for_win():
 		$Label.visible = true
 		set_pause_mode(true)
 	else:
+		combat_phase = false
 		emit_signal("roll_phase_begin")
-	
-func _on_ActionsSelected():
+
+
+func _on_ActionsSelected() -> void:
 	if !turn_owner:
 		yield(get_tree().create_timer(1.0), "timeout")
 	emit_signal("roll_phase_end")
 
-func setup_signals():
+
+func setup_signals() -> void:
 	connect("roll_phase_begin", self, "_on_Roll_Phase_Begin")
 	connect("roll_phase_end", self, "_on_Roll_Phase_End")	
 	connect("target_phase_end", self, "_on_targetPhase_end")
@@ -164,7 +178,7 @@ func setup_signals():
 	units.connect("actions_selected", self, "_on_ActionsSelected")
 
 
-func check_for_win():
+func check_for_win() -> bool:
 	for i in enemies.get_children():
 		if !i.disabled:
 			return false

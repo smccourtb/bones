@@ -35,17 +35,19 @@ const die_colors = {
 
 const ui_colors = {
 	"1": "blue",
-	"2": "green", # green 
+	"2": "green",
 	"3": "purple",
 	"4": "red",
 	"5": "yellow",
 	"Enemy": "enemy"
 }
+
 func _process(_delta: float) -> void:
 	if Global.turn_phase == "roll":
 		mouse_filter = 2
 	else:
 		mouse_filter = 1
+
 
 func _gui_input(event):
 	if event is InputEventMouseButton:
@@ -59,17 +61,20 @@ func _ready() -> void:
 	unit_refs = players + enemies
 	connect("target_picked", self, "_on_TargetsPicked")
 
+
 func _set_player_count():
 	var count = player_loadout.loadout.size()
 	if count > 5:
 		assert("There are too many characters in this party")
 	player_count = count
 
+
 func _set_enemy_count():
 	var count = enemy_loadout.size()
 	if count > 5:
 		count = 5
 	enemy_count = count
+
 
 func _setup_characters() -> void:
 	_set_player_count()
@@ -113,6 +118,7 @@ func _setup_enemies():
 		j.connect("target_selected", self, "_on_TargetSelected")
 	enemies = enemy_units
 
+
 func _on_ActionSelected(who:bool):
 	if who:
 		player_actions_selected += 1
@@ -123,12 +129,14 @@ func _on_ActionSelected(who:bool):
 		if enemy_actions_selected == enemy_count:
 			emit_signal("actions_selected")
 
+
 func _on_TargetsPicked():
 	# used as a signal to end player target phase
 	
 	player_targets_selected += 1
 	if player_targets_selected == player_count:
 		emit_signal("targets_selected")
+
 
 # used to trigger target selection
 func _on_TargetSelected(who):
@@ -139,6 +147,7 @@ func _on_TargetSelected(who):
 	for i in unit_refs:
 		i.set_targetable(false)
 	emit_signal("target_picked")
+
 
 func set_current_attacker(to):
 	if Global.turn_phase == "target":
@@ -151,6 +160,3 @@ func set_current_attacker(to):
 				i.set_targetable(false)
 		if current_attacker:
 			current_attacker.set_selected(true)
-		
-			
-		

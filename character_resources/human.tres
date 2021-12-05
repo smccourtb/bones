@@ -20,3 +20,4 @@ base_die = {
 6: ExtResource( 5 )
 }
 action_pool = [  ]
+boss = false

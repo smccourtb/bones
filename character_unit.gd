@@ -14,27 +14,29 @@ var target = null
 var targetable: bool = false
 var color: Color
 
-var die_ref
 var disabled: bool = false
 
-var line: Line2D
 onready var die = preload("res://CharacterDie.tscn").instance()
+
+onready var target_grow_tween = get_node("CharacterDisplay/TargetGrow")
+onready var target_shrink_tween = get_node("CharacterDisplay/TargetShrink")
 
 onready var action_tween = get_node("CharacterDisplay/Action")
 onready var tween = get_node("CharacterDisplay/Tween")
 onready var sprite = get_node("CharacterDisplay/CharacterContainer/Human/AnimationPlayer")
 onready var health_icon = preload("res://HealthIcon.tscn")
-
 onready var character_display = get_node("CharacterDisplay")
 onready var character_container = get_node("CharacterDisplay/CharacterContainer")
 onready var stat_container = get_node("CharacterDisplay/VBoxContainer/StatContainer")
 onready var action_container = get_node("CharacterDisplay/TextureRect")
+onready var target_indicator = get_node("CharacterDisplay/TextureRect/Targeted")
 
 
 func _ready() -> void:
 	connect("target_selected", self, "_on_TargetSelected")
 	connect("action_selected", self, "_on_ActionSelected")
 	sprite.play("Idle")
+
 
 func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	color = die_color
@@ -44,9 +46,11 @@ func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	set_health(data.health)
 	die_faces = data.base_die
 
+
 func set_health(new_health: int) -> void:
 	self.health = new_health
 	update_health_ui()
+
 
 func set_target_selected(value: bool):
 	if value:
@@ -59,6 +63,7 @@ func set_target_selected(value: bool):
 		character_display.disconnect("mouse_entered", self, "_on_CharacterDisplay_mouse_entered")
 		character_display.disconnect("mouse_exited", self, "_on_CharacterDisplay_mouse_exited")
 
+
 func update_health_ui():
 	for n in stat_container.get_children():
 		n.queue_free()
@@ -68,8 +73,10 @@ func update_health_ui():
 		var health_ui = health_icon.instance()
 		stat_container.add_child(health_ui)
 
+
 func get_health() -> int:
 	return self.health
+
 
 func set_target(new_target):
 	if new_target:
@@ -78,6 +85,7 @@ func set_target(new_target):
 	else:
 		target = null
 		set_target_selected(false)
+
 
 func take_damage(damage: int) -> void:
 	sprite.play("Hurt")
@@ -89,13 +97,16 @@ func take_damage(damage: int) -> void:
 	else:
 		_die()
 
-func set_defense(new_defense):
+
+func set_defense(new_defense: int) -> void:
 	defense = new_defense
+
 
 func _die() -> void:
 	sprite.play("Die")
 	yield(sprite, "animation_finished")
 	set_modulate(Color(1,1,1,.5))
+	queue_free()
 	disabled = true
 
 
@@ -115,6 +126,7 @@ func _on_Selected(action: Action):
 	face_choice = action
 	emit_signal("action_selected", true)
 
+
 func enter_roll_phase():
 	if is_instance_valid(die):
 		add_child(die)
@@ -125,6 +137,7 @@ func enter_roll_phase():
 	die.build_die(die_faces, color)
 	die.apply_impulse(die.translation, Vector3(randf(),randf(),randf()))
 
+
 func get_possible_targets():
 	var targets
 	if face_choice.hostile:
@@ -134,15 +147,16 @@ func get_possible_targets():
 	for i in targets:
 		i.set_targetable(true)
 
+
 func set_targetable(value):
 	targetable = value
 	if targetable:
 		get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").play("targetable")
-#		
 	else:
 		if  get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").current_animation:
 			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").seek(0, true)
 			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").stop(true)
+
 
 func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -155,12 +169,17 @@ func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
 				if get_parent().get_parent().current_attacker && get_parent().get_parent().current_attacker.face_choice.name != 'Miss':
 					emit_signal("target_selected", self)
 				elif !get_parent().get_parent().current_attacker && face_choice.name != 'Miss':
+	
 					get_parent().get_parent().set_current_attacker(self)
+
 
 func _on_TargetSelected(_who):
 	pass
+
+
 func _on_ActionSelected(_who):
 	pass
+
 
 func set_selected(new_value: bool):
 	# Sets node to be current attacker
@@ -175,7 +194,8 @@ func set_selected(new_value: bool):
 		null, Vector2(character_display.rect_position.x-10, character_display.rect_position.y), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
-	
+
+
 func action():
 	if face_choice.hostile:
 		sprite.play("Attack")
@@ -188,6 +208,7 @@ func action():
 		target.set_defense(face_choice.base_amount)
 	else:
 		return
+
 
 func reset():
 	die_selected = false
@@ -233,25 +254,24 @@ func _on_CharacterDisplay_mouse_exited() -> void:
 
 func _on_Tween_tween_completed(object: Object, _key: NodePath) -> void:
 	if object is RigidBody:
-
 		if face_choice: 
 			get_node("CharacterDisplay/TextureRect/ActionChoice").texture = face_choice.texture.duplicate()
 		die.queue_free()
 
+
 func _on_TextureRect_mouse_entered() -> void:
-	if target_selected:
-		var target_pos = target.action_container.get_global_rect()
-		var self_pos = action_container.get_global_rect()
-		line = Line2D.new()
-		line.name = "Line"
-		get_tree().get_root().get_node("Main").add_child(line)
-		line.points = [self_pos.position + Vector2(22,14), target_pos.position+ Vector2(6,14)]
-		line.width = 2
+	# on mouse over of action choice, display characters targets
+	if target_selected && face_choice.name != "Miss":
+		target.target_indicator.set_visible(true)
+		target.targeted_grow()
 
 
 func _on_TextureRect_mouse_exited() -> void:
-	if is_instance_valid(line):
-		line.queue_free()
+	if target_selected && face_choice.name != "Miss":
+		target.target_indicator.set_visible(false)
+		target.target_grow_tween.stop_all()
+		target.target_shrink_tween.stop_all()
+		
 
 func action_tween_start():
 	action_tween.interpolate_property(character_display, 'rect_position', null,
@@ -263,3 +283,25 @@ func action_tween_end():
 	action_tween.interpolate_property(character_display, 'rect_position', null,
 	Vector2(character_display.rect_position.x - 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	action_tween.start()
+
+
+func targeted_grow():
+	print('hello')
+	target_grow_tween.interpolate_property(target_indicator, "rect_scale", null, Vector2(1.1, 1.1),
+	.3, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	target_grow_tween.start()
+
+
+func targeted_shrink():
+	print('goodbye')
+	target_shrink_tween.interpolate_property(target_indicator, "rect_scale", null, Vector2(1, 1),
+	.3, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	target_shrink_tween.start()
+
+
+func _on_TargetGrow_tween_completed(object: Object, key: NodePath) -> void:
+	targeted_shrink()
+
+
+func _on_TargetShrink_tween_completed(object: Object, key: NodePath) -> void:
+	targeted_grow()

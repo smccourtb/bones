@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://enemy_unit.gd" type="Script" id=2]
 [ext_resource path="res://assets/ui/panels_enemy.png" type="Texture" id=3]
 [ext_resource path="res://HumanAnim.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui/ui-selectors.png" type="Texture" id=5]
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
@@ -42,6 +43,11 @@ tracks/0/keys = {
 flags = 16
 atlas = ExtResource( 3 )
 region = Rect2( 8, 8, 32, 32 )
+
+[sub_resource type="AtlasTexture" id=6]
+flags = 16
+atlas = ExtResource( 5 )
+region = Rect2( 32, 48, 16, 16 )
 
 [node name="EnemyUnit" type="Control" groups=[
 "enemy",
@@ -139,6 +145,10 @@ anims/targetable = SubResource( 4 )
 
 [node name="Action" type="Tween" parent="CharacterDisplay"]
 
+[node name="TargetGrow" type="Tween" parent="CharacterDisplay"]
+
+[node name="TargetShrink" type="Tween" parent="CharacterDisplay"]
+
 [node name="TextureRect" type="NinePatchRect" parent="CharacterDisplay"]
 show_behind_parent = true
 margin_left = 4.0
@@ -165,16 +175,29 @@ margin_left = -8.0001
 margin_top = -8.0
 margin_right = 8.0001
 margin_bottom = 8.0
+mouse_filter = 2
 expand = true
 stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Targeted" type="TextureRect" parent="CharacterDisplay/TextureRect"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 20, 20 )
+mouse_filter = 2
+texture = SubResource( 6 )
+expand = true
+stretch_mode = 6
+
 [node name="Position2D" type="Position2D" parent="."]
 position = Vector2( -10, 25 )
 
 [connection signal="gui_input" from="CharacterDisplay" to="." method="_on_CharacterDisplay_gui_input"]
 [connection signal="tween_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_completed"]
+[connection signal="tween_completed" from="CharacterDisplay/TargetGrow" to="." method="_on_TargetGrow_tween_completed"]
+[connection signal="tween_completed" from="CharacterDisplay/TargetShrink" to="." method="_on_TargetShrink_tween_completed"]
 [connection signal="mouse_entered" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_entered"]
 [connection signal="mouse_exited" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_exited"]

@@ -1,7 +1,6 @@
 extends "res://character_unit.gd"
 
 func _on_Tween_tween_all_completed() -> void:
-	die_ref = die
 	die.sleeping = true
 	die.reset()
 	if face_choice: 
@@ -10,7 +9,6 @@ func _on_Tween_tween_all_completed() -> void:
 	
 func _on_Selected(action: Action):
 	die_selected = true
-	
 	tween.interpolate_property(die, "scale",
 		die.scale, Vector3(0,0,0), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
@@ -36,13 +34,13 @@ func choose_target():
 		target_choice = -1
 	set_enemy_target(str(target_choice), target_party)
 
-func set_enemy_target(choice, side):
+func set_enemy_target(choice: String, side: bool):
 	if int( choice ) == -1:
 		return
 	if side:
-		target = get_parent().get_node("../PlayerUnits/"+choice)
+		target = get_parent().get_node("../PlayerUnits/"+ choice)
 	else:
-		target = get_parent().get_node(str(int(choice)+ 5))
+		target = get_parent().get_node(str(int(choice) + 5))
 	target_selected = true
 
 func reset():
@@ -50,7 +48,10 @@ func reset():
 	target = null
 	face_choice = null
 	target_selected = false
+	
+	# removes texture from action choice
 	get_node("CharacterDisplay/TextureRect/ActionChoice").set_texture(null)
+	# sets action container behind character display
 	tween.interpolate_property(action_container, "rect_position",
 		null, Vector2(4, action_container.rect_position.y), .3,
 		Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
