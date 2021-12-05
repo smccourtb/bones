@@ -6,7 +6,6 @@
 [sub_resource type="PhysicsMaterial" id=1]
 rough = true
 bounce = 0.43
-absorbent = true
 
 [sub_resource type="BoxShape" id=2]
 
@@ -61,4 +60,4 @@ enabled = true
 cast_to = Vector3( 0, 1, 0 )
 collide_with_areas = true
 
-[connection signal="input_event" from="." to="." method="_on_CharacterDie_input_event"]
+[node name="Tween" type="Tween" parent="."]

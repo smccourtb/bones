@@ -18,6 +18,7 @@ var enemies: Array
 var player_count: int = 0
 var enemy_count: int = 0
 
+var player_targets_selected : int = 0
 var player_actions_selected: int = 0
 var enemy_actions_selected: int  = 0
 
@@ -40,12 +41,23 @@ const ui_colors = {
 	"5": "yellow",
 	"Enemy": "enemy"
 }
+func _process(_delta: float) -> void:
+	if Global.turn_phase == "roll":
+		mouse_filter = 2
+	else:
+		mouse_filter = 1
+
+func _gui_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			set_current_attacker(null)
 
 
 func _ready() -> void:
 	_setup_characters()
 	_setup_enemies()
 	unit_refs = players + enemies
+	connect("target_picked", self, "_on_TargetsPicked")
 
 func _set_player_count():
 	var count = player_loadout.loadout.size()
@@ -86,8 +98,9 @@ func _setup_characters() -> void:
 
 func _setup_enemies():
 	_set_enemy_count()
-	var enemy = load("res://EnemyUnit.tscn").instance()
+	var Enemy = load("res://EnemyUnit.tscn")
 	for i in enemy_loadout.size():
+		var enemy = Enemy.instance()
 		enemy.name = str(6+i) # Change to num of players + 1 instead of 6
 		$EnemyUnits.add_child(enemy)
 	var enemy_units = get_node("EnemyUnits").get_children()
@@ -101,7 +114,6 @@ func _setup_enemies():
 	enemies = enemy_units
 
 func _on_ActionSelected(who:bool):
-	print("YEP ITS IN HERE")
 	if who:
 		player_actions_selected += 1
 		if player_actions_selected == player_count:
@@ -111,12 +123,34 @@ func _on_ActionSelected(who:bool):
 		if enemy_actions_selected == enemy_count:
 			emit_signal("actions_selected")
 
+func _on_TargetsPicked():
+	# used as a signal to end player target phase
+	
+	player_targets_selected += 1
+	if player_targets_selected == player_count:
+		emit_signal("targets_selected")
+
 # used to trigger target selection
 func _on_TargetSelected(who):
-	print("HELLOOOOOOOO")
 	if who:
-		print("WHO: ", who)
-		if current_attacker.line:
-			current_attacker.line.queue_free()
-			current_attacker.target = who
+		current_attacker.set_target(who)
+		current_attacker.set_selected(false)
+		set_current_attacker(null)
+	for i in unit_refs:
+		i.set_targetable(false)
 	emit_signal("target_picked")
+
+func set_current_attacker(to):
+	if Global.turn_phase == "target":
+		
+		if current_attacker:
+			current_attacker.set_selected(false)
+		current_attacker = to
+		if !current_attacker:
+			for i in unit_refs:
+				i.set_targetable(false)
+		if current_attacker:
+			current_attacker.set_selected(true)
+		
+			
+		

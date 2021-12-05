@@ -36,6 +36,10 @@ config/name="Bones"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Global="*res://global/global.gd"
+
 [display]
 
 window/size/width=480

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://enemy_unit.gd" type="Script" id=2]
@@ -21,6 +21,28 @@ flags = 16
 atlas = ExtResource( 3 )
 region = Rect2( 8, 120, 32, 32 )
 
+[sub_resource type="Animation" id=4]
+resource_name = "targetable"
+loop = true
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
+}
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 16
+atlas = ExtResource( 3 )
+region = Rect2( 8, 8, 32, 32 )
+
 [node name="EnemyUnit" type="Control" groups=[
 "enemy",
 ]]
@@ -42,8 +64,7 @@ __meta__ = {
 [node name="CharacterDisplay" type="NinePatchRect" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -104.0
-margin_right = 6.00049
+margin_left = -110.0
 margin_bottom = 47.0
 mouse_filter = 0
 texture = SubResource( 1 )
@@ -56,12 +77,22 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="CharacterDisplay"]
-anchor_right = 1.0
-margin_left = 22.3334
-margin_top = 11.3333
-margin_right = -26.6666
-margin_bottom = 21.3333
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterDisplay"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -35.9999
+margin_top = -12.0
+margin_right = 18.0001
+margin_bottom = 11.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer"]
+margin_right = 54.0
+margin_bottom = 10.0
 custom_fonts/font = SubResource( 2 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
@@ -72,16 +103,23 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="StatContainer" type="HBoxContainer" parent="CharacterDisplay/VBoxContainer"]
+margin_top = 18.0
+margin_right = 54.0
+margin_bottom = 18.0
+custom_constants/separation = 0
+
 [node name="CharacterContainer" type="NinePatchRect" parent="CharacterDisplay"]
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-margin_left = -46.9024
+margin_left = -42.0005
 margin_top = -24.0
-margin_right = 1.0979
+margin_right = 5.99982
 margin_bottom = 24.0
 rect_min_size = Vector2( 32, 32 )
+rect_pivot_offset = Vector2( 24, 24 )
 texture = SubResource( 3 )
 patch_margin_left = 16
 patch_margin_top = 16
@@ -94,39 +132,49 @@ __meta__ = {
 [node name="Human" parent="CharacterDisplay/CharacterContainer" instance=ExtResource( 4 )]
 flip_h = true
 
-[node name="Tween" type="Tween" parent="CharacterDisplay"]
-playback_speed = 5.22
-playback/speed = 5.22
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterDisplay/CharacterContainer"]
+anims/targetable = SubResource( 4 )
 
-[node name="ActionChoice" type="TextureRect" parent="CharacterDisplay"]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -112.59
-margin_top = 16.6751
-margin_right = -96.5898
-margin_bottom = 32.6751
+[node name="Tween" type="Tween" parent="CharacterDisplay"]
+
+[node name="Action" type="Tween" parent="CharacterDisplay"]
+
+[node name="TextureRect" type="NinePatchRect" parent="CharacterDisplay"]
+show_behind_parent = true
+margin_left = 4.0
+margin_top = 9.0
+margin_right = 44.0
+margin_bottom = 49.0
+rect_scale = Vector2( 0.75, 0.75 )
+mouse_filter = 0
+texture = SubResource( 5 )
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionChoice" type="TextureRect" parent="CharacterDisplay/TextureRect"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -8.0001
+margin_top = -8.0
+margin_right = 8.0001
+margin_bottom = 8.0
 expand = true
 stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="StatContainer" type="GridContainer" parent="CharacterDisplay"]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -93.4264
-margin_top = 22.8631
-margin_right = -42.4264
-margin_bottom = 38.8631
-custom_constants/vseparation = 0
-custom_constants/hseparation = 0
-columns = 6
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Position2D" type="Position2D" parent="."]
-position = Vector2( 5, 25 )
+position = Vector2( -10, 25 )
 
 [connection signal="gui_input" from="CharacterDisplay" to="." method="_on_CharacterDisplay_gui_input"]
-[connection signal="tween_all_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_all_completed"]
+[connection signal="tween_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_completed"]
+[connection signal="mouse_entered" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_entered"]
+[connection signal="mouse_exited" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_exited"]

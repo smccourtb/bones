@@ -5,57 +5,79 @@ signal target_selected
 
 var health: int
 var defense: int
+
 var die_faces := {}
 var face_choice: Action
-var selected: bool = false
-var color: Color
-var die_data: Dictionary
+var die_selected: bool = false
+var target_selected: bool = false
 var target = null
+var targetable: bool = false
+var color: Color
+
 var die_ref
 var disabled: bool = false
 
-var line
+var line: Line2D
 onready var die = preload("res://CharacterDie.tscn").instance()
 
+onready var action_tween = get_node("CharacterDisplay/Action")
 onready var tween = get_node("CharacterDisplay/Tween")
 onready var sprite = get_node("CharacterDisplay/CharacterContainer/Human/AnimationPlayer")
 onready var health_icon = preload("res://HealthIcon.tscn")
+
+onready var character_display = get_node("CharacterDisplay")
+onready var character_container = get_node("CharacterDisplay/CharacterContainer")
+onready var stat_container = get_node("CharacterDisplay/VBoxContainer/StatContainer")
+onready var action_container = get_node("CharacterDisplay/TextureRect")
 
 
 func _ready() -> void:
 	connect("target_selected", self, "_on_TargetSelected")
 	connect("action_selected", self, "_on_ActionSelected")
-	
-	
 	sprite.play("Idle")
-	
 
 func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	color = die_color
-	get_node("CharacterDisplay").texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	get_node("CharacterDisplay/CharacterContainer").texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	
+	character_display.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
+	character_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
+	action_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
 	set_health(data.health)
-	die_data = data.base_die
+	die_faces = data.base_die
 
 func set_health(new_health: int) -> void:
 	self.health = new_health
 	update_health_ui()
-	
+
+func set_target_selected(value: bool):
+	if value:
+		tween.interpolate_property($CharacterDisplay, "rect_scale",
+			null, Vector2(.9, .9), 1,
+			Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+		tween.start()
+	target_selected = value
+	if character_display.is_connected("mouse_entered", self, "_on_CharacterDisplay_mouse_entered"):
+		character_display.disconnect("mouse_entered", self, "_on_CharacterDisplay_mouse_entered")
+		character_display.disconnect("mouse_exited", self, "_on_CharacterDisplay_mouse_exited")
 
 func update_health_ui():
-	var node = get_node("CharacterDisplay/StatContainer")
-	for n in node.get_children():
+	for n in stat_container.get_children():
 		n.queue_free()
 	if health == 0:
 		return
-	for i in range(health):
+	for _i in range(health):
 		var health_ui = health_icon.instance()
-		node.add_child(health_ui)
+		stat_container.add_child(health_ui)
 
 func get_health() -> int:
 	return self.health
 
+func set_target(new_target):
+	if new_target:
+		target = new_target
+		set_target_selected(true)
+	else:
+		target = null
+		set_target_selected(false)
 
 func take_damage(damage: int) -> void:
 	sprite.play("Hurt")
@@ -65,12 +87,12 @@ func take_damage(damage: int) -> void:
 	if new_health > 0:
 		set_health(new_health)
 	else:
-		die()
+		_die()
 
 func set_defense(new_defense):
 	defense = new_defense
 
-func die() -> void:
+func _die() -> void:
 	sprite.play("Die")
 	yield(sprite, "animation_finished")
 	set_modulate(Color(1,1,1,.5))
@@ -78,90 +100,82 @@ func die() -> void:
 
 
 func _on_Selected(action: Action):
-	selected = true
-#	tween.interpolate_property(die, "translation",
-#		die.translation, die.starting_position, 1,
-#		Tween.TRANS_LINEAR, Tween.EASE_OUT)
+	die_selected = true
+	action_container.set_visible(true)
+#	die dissapear after being clicked
 	tween.interpolate_property(die, "scale",
 		die.scale, Vector3(0,0,0), 1,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.interpolate_property($CharacterDisplay, "rect_size",
-		$CharacterDisplay.rect_size, Vector2(125, $CharacterDisplay.rect_size.y), 1,
+#	slide out 'action' drawer
+	tween.interpolate_property(action_container, "rect_position",
+		null, Vector2(99, action_container.rect_position.y), 1,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
+	
 	face_choice = action
 	emit_signal("action_selected", true)
 
-
-func _on_Tween_tween_all_completed() -> void:
-	die_ref = die
-	die.sleeping = true
-	die.reset()
-	
-	if face_choice: 
-		remove_child(die)
-		get_node("CharacterDisplay/ActionChoice").texture = face_choice.texture.duplicate()
-
-func _physics_process(delta: float) -> void:
-	if is_instance_valid(line):
-		line.points[1] = get_local_mouse_position()
-
 func enter_roll_phase():
-	if die_ref:
-		add_child(die_ref)
-		die_ref.reset()
-		die_ref.sleeping = false
-	else:
+	if is_instance_valid(die):
 		add_child(die)
-		die.connect("selected", self, "_on_Selected")
-		die.build_die(die_data, color)
-		die.sleeping = false
-		randomize()
-		die.apply_impulse(die.translation, Vector3(randf(),randf(),randf()))
+	else:
+		die = preload("res://CharacterDie.tscn").instance()
+		add_child(die)
+	die.connect("die_selected", self, "_on_Selected")
+	die.build_die(die_faces, color)
+	die.apply_impulse(die.translation, Vector3(randf(),randf(),randf()))
 
-func choose_target():
-	print("hi")
-	set_selected(true)
-#	get_possible_targets()
-	line = Line2D.new()
-	add_child(line)
-	line.points = [$Position2D.position, get_global_mouse_position()]
-	line.width=2
-	
-	
 func get_possible_targets():
+	var targets
 	if face_choice.hostile:
-		var targets = get_tree().get_nodes_in_group("enemy")
-		for i in targets:
-			i.set_selected(true)
-			
+		targets = get_tree().get_nodes_in_group("enemy")
+	else:
+		targets = get_tree().get_nodes_in_group("player")
+	for i in targets:
+		i.set_targetable(true)
 
+func set_targetable(value):
+	targetable = value
+	if targetable:
+		get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").play("targetable")
+#		
+	else:
+		if  get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").current_animation:
+			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").seek(0, true)
+			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").stop(true)
 
 func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
-	var mouse_click = event as InputEventMouseButton
-	if mouse_click and mouse_click.button_index == 1 and mouse_click.pressed:
-#		set_selected(false)
-		emit_signal("target_selected", self)
-		
-		
+	if event is InputEventMouseButton:
+		if event.button_index == 1 and event.pressed:
+			if Global.turn_phase == "target":
+				if get_parent().get_parent().current_attacker == self  && (face_choice.name == 'Miss' || target):
+					return
+				if !get_parent().get_parent().current_attacker && (face_choice.name == 'Miss' || target):
+					return
+				if get_parent().get_parent().current_attacker && get_parent().get_parent().current_attacker.face_choice.name != 'Miss':
+					emit_signal("target_selected", self)
+				elif !get_parent().get_parent().current_attacker && face_choice.name != 'Miss':
+					get_parent().get_parent().set_current_attacker(self)
 
-func _on_TargetSelected(who):
+func _on_TargetSelected(_who):
+	pass
+func _on_ActionSelected(_who):
 	pass
 
-func _on_ActionSelected(who):
-	pass
-	
 func set_selected(new_value: bool):
+	# Sets node to be current attacker
 	if new_value:
-		tween.interpolate_property($CharacterDisplay, "rect_position",
-		$CharacterDisplay.rect_position, Vector2($CharacterDisplay.rect_position.x+25, $CharacterDisplay.rect_position.y), .3,
+		tween.interpolate_property(character_display, "rect_position",
+		null, Vector2(character_display.rect_position.x+10, character_display.rect_position.y), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		get_possible_targets()
 	
 	else:
-		tween.interpolate_property($CharacterDisplay, "rect_position",
-		$CharacterDisplay.rect_position, Vector2($CharacterDisplay.rect_position.x-25, $CharacterDisplay.rect_position.y), .3,
+		tween.interpolate_property(character_display, "rect_position",
+		null, Vector2(character_display.rect_position.x-10, character_display.rect_position.y), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
+	
 func action():
 	if face_choice.hostile:
 		sprite.play("Attack")
@@ -176,11 +190,76 @@ func action():
 		return
 
 func reset():
-	selected = false
+	die_selected = false
 	target = null
 	face_choice = null
-	get_node("CharacterDisplay/ActionChoice").set_texture(null)
-	tween.interpolate_property($CharacterDisplay, "rect_size",
-		$CharacterDisplay.rect_size, Vector2(110, $CharacterDisplay.rect_size.y), 1,
+	set_target_selected(false)
+	character_display.connect("mouse_entered", self, "_on_CharacterDisplay_mouse_entered")
+	character_display.connect("mouse_exited", self, "_on_CharacterDisplay_mouse_exited")
+	
+	get_node("CharacterDisplay/TextureRect/ActionChoice").set_texture(null)
+	tween.interpolate_property(action_container, "rect_position",
+		null, Vector2(75, action_container.rect_position.y), 1,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.interpolate_property(character_display, "rect_scale",
+		null, Vector2(1, 1), 1,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
+
+
+func _on_CharacterDisplay_mouse_entered() -> void:
+	if target_selected:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1, 1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	else:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1.1, 1.1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
+
+
+func _on_CharacterDisplay_mouse_exited() -> void:
+	if target_selected:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(.9, .9), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	else:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1, 1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
+
+
+func _on_Tween_tween_completed(object: Object, _key: NodePath) -> void:
+	if object is RigidBody:
+
+		if face_choice: 
+			get_node("CharacterDisplay/TextureRect/ActionChoice").texture = face_choice.texture.duplicate()
+		die.queue_free()
+
+func _on_TextureRect_mouse_entered() -> void:
+	if target_selected:
+		var target_pos = target.action_container.get_global_rect()
+		var self_pos = action_container.get_global_rect()
+		line = Line2D.new()
+		line.name = "Line"
+		get_tree().get_root().get_node("Main").add_child(line)
+		line.points = [self_pos.position + Vector2(22,14), target_pos.position+ Vector2(6,14)]
+		line.width = 2
+
+
+func _on_TextureRect_mouse_exited() -> void:
+	if is_instance_valid(line):
+		line.queue_free()
+
+func action_tween_start():
+	action_tween.interpolate_property(character_display, 'rect_position', null,
+	Vector2(character_display.rect_position.x + 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.start()
+
+
+func action_tween_end():
+	action_tween.interpolate_property(character_display, 'rect_position', null,
+	Vector2(character_display.rect_position.x - 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.start()

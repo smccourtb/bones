@@ -21,7 +21,8 @@ __meta__ = {
 }
 player_loadout = ExtResource( 5 )
 enemy_loadout = {
-"5": ExtResource( 4 )
+"5": ExtResource( 4 ),
+"6": ExtResource( 4 )
 }
 
 [node name="PlayerUnits" type="VBoxContainer" parent="."]

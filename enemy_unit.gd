@@ -6,19 +6,20 @@ func _on_Tween_tween_all_completed() -> void:
 	die.reset()
 	if face_choice: 
 		remove_child(die)
-		get_node("CharacterDisplay/ActionChoice").texture = face_choice.texture.duplicate()
-
+		get_node("CharacterDisplay/TextureRect/ActionChoice").texture = face_choice.texture.duplicate()
+	
 func _on_Selected(action: Action):
-	selected = true
+	die_selected = true
+	
 	tween.interpolate_property(die, "scale",
-		die.scale, Vector3(0,0,0), 1,
+		die.scale, Vector3(0,0,0), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.interpolate_property($CharacterDisplay, "margin_left",
-		$CharacterDisplay.margin_left, -125, 1,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+
+	tween.interpolate_property(action_container, "rect_position",
+		null, Vector2(-19, action_container.rect_position.y), .3,
+		Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 	tween.start()
 	face_choice = action
-#	emit_signal("action_selected", false)
 
 func choose_target():
 	var target_range: int
@@ -33,26 +34,35 @@ func choose_target():
 		target_choice = randi() % target_range + 1
 	else:
 		target_choice = -1
-	set_target(str(target_choice), target_party)
-	emit_signal("target_selected", false)
-	
-	
-	
+	set_enemy_target(str(target_choice), target_party)
 
-func set_target(choice, side):
+func set_enemy_target(choice, side):
 	if int( choice ) == -1:
 		return
 	if side:
 		target = get_parent().get_node("../PlayerUnits/"+choice)
 	else:
 		target = get_parent().get_node(str(int(choice)+ 5))
+	target_selected = true
 
 func reset():
-	selected = false
+	die_selected = false
 	target = null
 	face_choice = null
-	get_node("CharacterDisplay/ActionChoice").set_texture(null)
-	tween.interpolate_property($CharacterDisplay, "margin_left",
-		$CharacterDisplay.margin_left, -104, 1,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	target_selected = false
+	get_node("CharacterDisplay/TextureRect/ActionChoice").set_texture(null)
+	tween.interpolate_property(action_container, "rect_position",
+		null, Vector2(4, action_container.rect_position.y), .3,
+		Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 	tween.start()
+
+func action_tween_start():
+	action_tween.interpolate_property(character_display, 'rect_position', null,
+	Vector2(character_display.rect_position.x - 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.start()
+
+
+func action_tween_end():
+	action_tween.interpolate_property(character_display, 'rect_position', null,
+	Vector2(character_display.rect_position.x + 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.start()

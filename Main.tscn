@@ -1,10 +1,22 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://assets/forgotten-plains-all-tiles-and-props (copy).png" type="Texture" id=2]
 [ext_resource path="res://Units.tscn" type="PackedScene" id=3]
 [ext_resource path="res://character_resources/human.tres" type="Resource" id=9]
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=10]
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 0.705882, 0.109804, 0.109804, 1 )
+
+[sub_resource type="SpatialMaterial" id=5]
+albedo_color = Color( 0.109804, 0.27451, 0.878431, 1 )
+
+[sub_resource type="SpatialMaterial" id=6]
+albedo_color = Color( 0.0980392, 0.760784, 0.0588235, 1 )
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_color = Color( 0.803922, 0.807843, 0.145098, 1 )
 
 [sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 10 )
@@ -72,7 +84,8 @@ script = ExtResource( 1 )
 
 [node name="Units" parent="." instance=ExtResource( 3 )]
 enemy_loadout = {
-"6": ExtResource( 9 )
+"6": ExtResource( 9 ),
+"7": ExtResource( 9 )
 }
 
 [node name="TurnOwnerLabel" parent="Units" index="2"]
@@ -93,36 +106,40 @@ current = true
 fov = 47.0
 size = 4569.59
 
-[node name="CSGBox" type="CSGBox" parent="."]
+[node name="Floor" type="CSGBox" parent="."]
 transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 11.8346, 1.27416, -13.6729, -1.04245 )
 visible = false
 use_collision = true
 width = 0.271326
 depth = 1.93121
 
-[node name="CSGBox2" type="CSGBox" parent="."]
+[node name="EastWall" type="CSGBox" parent="."]
 transform = Transform( -9.14677e-07, -0.552355, 0, 19.1138, -2.2054e-08, 0, 0, 0, 13.2053, 10.2324, 3.3919, 2.58465 )
 visible = false
 use_collision = true
 collision_layer = 2
+material = SubResource( 4 )
 
-[node name="CSGBox5" type="CSGBox" parent="."]
+[node name="WestWall" type="CSGBox" parent="."]
 transform = Transform( -1.65596e-06, -1, 0, 37.8839, -4.37114e-08, 0, 0, 0, 13.2053, -11.4825, -9.78817, 2.50165 )
 visible = false
 use_collision = true
 collision_layer = 2
+material = SubResource( 5 )
 
-[node name="CSGBox3" type="CSGBox" parent="."]
+[node name="SouthWall" type="CSGBox" parent="."]
 transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, 1.73453, -9.78817, 7.87633 )
 visible = false
 use_collision = true
 collision_layer = 2
+material = SubResource( 6 )
 
-[node name="CSGBox4" type="CSGBox" parent="."]
+[node name="NorthWall" type="CSGBox" parent="."]
 transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, 2.03967, -10.0205, -11.5207 )
 visible = false
 use_collision = true
 collision_layer = 2
+material = SubResource( 7 )
 
 [node name="Button" type="Button" parent="."]
 anchor_left = 0.5
