@@ -1,5 +1,6 @@
 extends Spatial
 
+
 signal roll_phase_begin
 signal roll_phase_end
 signal target_phase_begin
@@ -13,11 +14,14 @@ var turn_owner: bool = false # if true player turn, false: enemy
 var roll_phase: bool = false
 var target_phase: bool = false
 var combat_phase: bool = false
+var roll_phase_begin_timeout: float = 1.0
 
 # node references
 onready var units = $Units
-onready var players = get_node("Units/PlayerUnits")
-onready var enemies = get_node("Units/EnemyUnits")
+onready var players = $Units/PlayerUnits
+onready var enemies = $Units/EnemyUnits
+onready var button = $Button
+onready var label = $Label
 
 
 func _ready() -> void:
@@ -29,7 +33,7 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	units.turn_label.text = "Player Turn" if turn_owner else "Enemy Turn"
 	units.phase_label.text = "Phase: " + Global.turn_phase.capitalize()
-	$Button.visible = true if Global.turn_phase == "roll" && turn_owner else false
+	button.visible = Global.turn_phase == "roll" and turn_owner
 
 
 func _on_Button_pressed() -> void:
@@ -37,13 +41,13 @@ func _on_Button_pressed() -> void:
 	var dice = get_tree().get_nodes_in_group("die")
 	for die in dice:
 		die.set_gravity_scale(4)
-		die.apply_impulse(die.translation, Vector3(randi() % 5 + .5,randi() % 5 + .5,randi() % 5 + .5))
+		die.apply_impulse(die.translation, Vector3(randi() % 5 + .5, randi() % 5 + .5, randi() % 5 + .5))
 
 
 func set_reroll(amount) -> void:
 	rerolls -= amount
 	if rerolls <= 0:
-		$Button.set_disabled(true)
+		button.set_disabled(true)
 		rerolls = 0
 
 
@@ -52,25 +56,25 @@ func _on_Roll_Phase_Begin() -> void:
 	roll_phase = true
 	Global.turn_phase = "roll"
 	if turn_owner:
-		for i in players.get_children():
-			i.enter_roll_phase()
+		for player in players.get_children():
+			player.enter_roll_phase()
 	else:
-		for i in enemies.get_children():
-			i.enter_roll_phase()
-		yield(get_tree().create_timer(4.0), "timeout")
+		for enemy in enemies.get_children():
+			enemy.enter_roll_phase()
+		yield(get_tree().create_timer(roll_phase_begin_timeout), "timeout")
 		emit_signal("roll_phase_end")
 
 
 func _on_Roll_Phase_End() -> void:
 	print("EXITING ROLL PHASE")
 	if turn_owner:
-		for i in players.get_children():
-			if !i.die_selected:
-				i._on_Selected(i.get_child(2).actions[i.get_child(2).roll])
+		for player in players.get_children():
+			if not player.die_selected:
+				player._on_Selected(player.get_child(2).actions[player.get_child(2).roll])
 		rerolls = 0
 	else:
-		for i in enemies.get_children():
-			i._on_Selected(i.get_child(2).actions[i.get_child(2).roll])
+		for enemy in enemies.get_children():
+			enemy._on_Selected(enemy.get_child(2).actions[enemy.get_child(2).roll])
 		rerolls = 3
 	roll_phase = false
 	emit_signal("target_phase_begin")
@@ -81,17 +85,17 @@ func _on_targetPhase_begin() -> void:
 	target_phase = true
 	Global.turn_phase = "target"
 	if turn_owner:
-		for i in players.get_children():
-			if i.face_choice.name == "Miss":
-				i.emit_signal("target_selected", null)
-				i.set_target_selected(true)
+		for player in players.get_children():
+			if player.face_choice.name == "Miss":
+				player.emit_signal("target_selected", null)
+				player.set_target_selected(true)
 		yield(units, "targets_selected")
 		emit_signal("target_phase_end")
 	
-	if !turn_owner:
-		for i in enemies.get_children():
-			if i.face_choice.name != "Miss":
-				i.choose_target()
+	if not turn_owner:
+		for enemy in enemies.get_children():
+			if not enemy.face_choice.name == "Miss":
+				enemy.choose_target()
 #			else:
 #				i.emit_signal("target_selected", false)
 #		turn_owner = !turn_owner
@@ -104,7 +108,7 @@ func _on_targetPhase_end() -> void:
 	if turn_owner:
 		emit_signal("combat_phase_begin")
 	else:
-		turn_owner = !turn_owner
+		turn_owner = not turn_owner
 		emit_signal("roll_phase_begin")
 
 
@@ -114,25 +118,25 @@ func _on_combatPhase_begin() -> void:
 	Global.turn_phase = "combat"
 	if turn_owner:
 		var characters = []
-		for i in players.get_children():
-			if i.target:
-				characters.append(i)
-		for j in characters:
-			if !j.disabled:
-				j.action_tween_start()
-				j.target.action_tween_start()
+		for player in players.get_children():
+			if player.target:
+				characters.append(player)
+		for character in characters:
+			if not character.disabled:
+				character.action_tween_start()
+				character.target.action_tween_start()
 				yield(get_tree().create_timer(.5), "timeout")
-				j.action()
+				character.action()
 				yield(get_tree().create_timer(1.0), "timeout")
-				j.action_tween_end()
-				j.target.action_tween_end()
+				character.action_tween_end()
+				character.target.action_tween_end()
 				yield(get_tree().create_timer(1.5), "timeout")
-		turn_owner = !turn_owner
+		turn_owner = not turn_owner
 		emit_signal("combat_phase_begin")
 	else:
-		for j in enemies.get_children():
-			if j.target && !j.disabled:
-				j.action()
+		for enemy in enemies.get_children():
+			if enemy.target and not enemy.disabled:
+				enemy.action()
 				yield(get_tree().create_timer(2.0), "timeout")
 		emit_signal("combat_phase_end")
 
@@ -146,16 +150,15 @@ func _on_combatPhase_end() -> void:
 	units.player_actions_selected = 0
 	units.player_targets_selected = 0
 	
-	$Button.set_disabled(false)
+	button.set_disabled(false)
 	# reset actions
 	# increase round num
 	for i in units.unit_refs:
 		if is_instance_valid(i):
 			i.reset()
-			
 	
 	if check_for_win():
-		$Label.visible = true
+		label.show()
 		set_pause_mode(true)
 	else:
 		combat_phase = false
@@ -163,7 +166,7 @@ func _on_combatPhase_end() -> void:
 
 
 func _on_ActionsSelected() -> void:
-	if !turn_owner:
+	if not turn_owner:
 		yield(get_tree().create_timer(1.0), "timeout")
 	emit_signal("roll_phase_end")
 
@@ -179,8 +182,7 @@ func setup_signals() -> void:
 
 
 func check_for_win() -> bool:
-	for i in enemies.get_children():
-		if !i.disabled:
+	for enemy in enemies.get_children():
+		if not enemy.disabled:
 			return false
 	return true
-		
