@@ -1,4 +1,4 @@
-extends "res://character_unit.gd"
+extends "res://units/character_unit.gd"
 
 func _on_Tween_tween_all_completed() -> void:
 	die.sleeping = true

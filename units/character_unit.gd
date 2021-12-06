@@ -16,7 +16,7 @@ var color: Color
 
 var disabled: bool = false
 
-onready var die = preload("res://CharacterDie.tscn").instance()
+onready var die = preload("res://dice/CharacterDie.tscn").instance()
 
 onready var target_grow_tween = get_node("CharacterDisplay/TargetGrow")
 onready var target_shrink_tween = get_node("CharacterDisplay/TargetShrink")
@@ -24,7 +24,7 @@ onready var target_shrink_tween = get_node("CharacterDisplay/TargetShrink")
 onready var action_tween = get_node("CharacterDisplay/Action")
 onready var tween = get_node("CharacterDisplay/Tween")
 onready var sprite = get_node("CharacterDisplay/CharacterContainer/Human/AnimationPlayer")
-onready var health_icon = preload("res://HealthIcon.tscn")
+onready var health_icon = preload("res://scenes/HealthIcon.tscn")
 onready var character_display = get_node("CharacterDisplay")
 onready var character_container = get_node("CharacterDisplay/CharacterContainer")
 onready var stat_container = get_node("CharacterDisplay/VBoxContainer/StatContainer")
@@ -131,7 +131,7 @@ func enter_roll_phase():
 	if is_instance_valid(die):
 		add_child(die)
 	else:
-		die = preload("res://CharacterDie.tscn").instance()
+		die = preload("res://dice/CharacterDie.tscn").instance()
 		add_child(die)
 	die.connect("die_selected", self, "_on_Selected")
 	die.build_die(die_faces, color)
