@@ -1,3 +1,3 @@
 extends Node
 
-var turn_phase: String
+var turn_phase: String # roll, action, combat

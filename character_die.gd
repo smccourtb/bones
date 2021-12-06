@@ -1,18 +1,20 @@
 extends RigidBody
 
+
 signal stopped()
 signal die_selected(action)
 
-onready var mesh = get_node("Cube")
+onready var mesh = $Cube
+onready var tween = $Tween
 var starting_position: Vector3
 var roll: int
 var actions: Dictionary
 
 
-
 func _ready() -> void:
 	connect("stopped", self, "_on_Stopped")
-	
+
+
 func _physics_process(_delta: float) -> void:
 	if linear_velocity.length() < .1:
 		emit_signal("stopped")
@@ -22,11 +24,13 @@ func _physics_process(_delta: float) -> void:
 			disconnect("mouse_entered", self, "_on_CharacterDie_mouse_entered")
 			disconnect("mouse_exited", self, "_on_CharacterDie_mouse_exited")
 
+
 func _on_Stopped():
-	if !is_connected("input_event", self, "_on_CharacterDie_input_event"):
+	if not is_connected("input_event", self, "_on_CharacterDie_input_event"):
 		connect("input_event", self, "_on_CharacterDie_input_event")
 		connect("mouse_entered", self, "_on_CharacterDie_mouse_entered")
 		connect("mouse_exited", self, "_on_CharacterDie_mouse_exited")
+	
 	if $'6'.is_colliding():
 		roll = 2
 	elif $'5'.is_colliding():
@@ -46,6 +50,7 @@ func _on_CharacterDie_input_event(_camera: Node, event: InputEvent, _click_posit
 	if mouse_click and mouse_click.button_index == 1 and mouse_click.pressed:
 		emit_signal("die_selected", actions[roll])
 
+
 func build_die(faces: Dictionary, color: Color):
 	for i in range(mesh.get_surface_material_count()):
 		var x = mesh.get_active_material(i).duplicate()
@@ -55,6 +60,7 @@ func build_die(faces: Dictionary, color: Color):
 		mesh.set_surface_material(i, x)
 	actions = faces
 
+
 func reset():
 	linear_velocity = Vector3(1,1,1)
 	angular_velocity = Vector3(0,0,3)
@@ -63,10 +69,10 @@ func reset():
 
 
 func _on_CharacterDie_mouse_entered() -> void:
-	$Tween.interpolate_property(self, "scale", null, Vector3(1.3, 1.3, 1.3), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	$Tween.start()
+	tween.interpolate_property(self, "scale", null, Vector3(1.3, 1.3, 1.3), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
 
 
 func _on_CharacterDie_mouse_exited() -> void:
-	$Tween.interpolate_property(self, "scale", null, Vector3(1, 1, 1), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	$Tween.start()
+	tween.interpolate_property(self, "scale", null, Vector3(1, 1, 1), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
