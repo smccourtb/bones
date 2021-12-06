@@ -81,7 +81,7 @@ func _setup_characters() -> void:
 	# TODO: set a parameter that takes an existing party
 	
 	# Read the player loadout and add children to PlayerUnits
-	var player_resource = load("res://CharacterUnit.tscn")
+	var player_resource = preload("res://units/CharacterUnit.tscn")
 	var player_units_node = get_node("PlayerUnits")
 	for i in player_count:
 		var player = player_resource.instance()
@@ -103,7 +103,7 @@ func _setup_characters() -> void:
 
 func _setup_enemies():
 	_set_enemy_count()
-	var Enemy = load("res://EnemyUnit.tscn")
+	var Enemy = preload("res://units/enemy/EnemyUnit.tscn")
 	for i in enemy_loadout.size():
 		var enemy = Enemy.instance()
 		enemy.name = str(6+i) # Change to num of players + 1 instead of 6

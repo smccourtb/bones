@@ -1,59 +1,64 @@
 [gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://character_unit.gd" type="Script" id=2]
-[ext_resource path="res://HumanAnim.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/ui/ui-selectors.png" type="Texture" id=4]
-[ext_resource path="res://assets/ui/panels_green.png" type="Texture" id=5]
+[ext_resource path="res://units/enemy/enemy_unit.gd" type="Script" id=2]
+[ext_resource path="res://assets/ui/panels_enemy.png" type="Texture" id=3]
+[ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui/ui-selectors.png" type="Texture" id=5]
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
 flags = 16
-atlas = ExtResource( 5 )
+atlas = ExtResource( 3 )
 region = Rect2( 264, 120, 64, 32 )
 
-[sub_resource type="AtlasTexture" id=2]
+[sub_resource type="DynamicFont" id=2]
+size = 12
+font_data = ExtResource( 1 )
+
+[sub_resource type="AtlasTexture" id=3]
 resource_local_to_scene = true
 flags = 16
-atlas = ExtResource( 5 )
-region = Rect2( 120, 8, 32, 32 )
+atlas = ExtResource( 3 )
+region = Rect2( 8, 120, 32, 32 )
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=4]
 resource_name = "targetable"
 loop = true
+step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:rect_scale")
-tracks/0/interp = 2
-tracks/0/loop_wrap = false
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5, 1 ),
+"times": PoolRealArray( 0, 0.4, 0.8 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
 "values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
 }
 
-[sub_resource type="DynamicFont" id=4]
-size = 12
-font_data = ExtResource( 1 )
-
 [sub_resource type="AtlasTexture" id=5]
-resource_local_to_scene = true
 flags = 16
-atlas = ExtResource( 5 )
+atlas = ExtResource( 3 )
 region = Rect2( 8, 8, 32, 32 )
 
 [sub_resource type="AtlasTexture" id=6]
 flags = 16
-atlas = ExtResource( 4 )
+atlas = ExtResource( 5 )
 region = Rect2( 32, 48, 16, 16 )
 
-[node name="CharacterUnit" type="Control" groups=[
-"player",
+[node name="EnemyUnit" type="Control" groups=[
+"enemy",
 ]]
-margin_right = 120.0
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -90.0
+margin_right = 30.0
 margin_bottom = 50.0
+grow_horizontal = 0
+grow_vertical = 0
 rect_min_size = Vector2( 120, 50 )
 rect_scale = Vector2( 0.75, 0.75 )
 mouse_filter = 2
@@ -63,12 +68,13 @@ __meta__ = {
 }
 
 [node name="CharacterDisplay" type="NinePatchRect" parent="."]
-margin_right = 110.0
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -110.0
 margin_bottom = 47.0
-rect_pivot_offset = Vector2( 55, 23.5 )
 mouse_filter = 0
-mouse_default_cursor_shape = 2
 texture = SubResource( 1 )
+region_rect = Rect2( 264, 120, 64, 32 )
 patch_margin_left = 42
 patch_margin_top = 16
 patch_margin_right = 42
@@ -77,41 +83,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CharacterContainer" type="NinePatchRect" parent="CharacterDisplay"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_left = -7.0
-margin_top = -24.0
-margin_right = 41.0
-margin_bottom = 24.0
-rect_min_size = Vector2( 32, 32 )
-rect_scale = Vector2( 1.02749, 1.02749 )
-rect_pivot_offset = Vector2( 24, 24 )
-rect_clip_content = true
-texture = SubResource( 2 )
-patch_margin_left = 16
-patch_margin_top = 16
-patch_margin_right = 16
-patch_margin_bottom = 16
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Human" parent="CharacterDisplay/CharacterContainer" instance=ExtResource( 3 )]
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterDisplay/CharacterContainer"]
-anims/targetable = SubResource( 3 )
-
 [node name="VBoxContainer" type="VBoxContainer" parent="CharacterDisplay"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -19.0
-margin_top = -12.5
-margin_right = 35.0
-margin_bottom = 10.5
-custom_constants/separation = 0
+margin_left = -35.9999
+margin_top = -12.0
+margin_right = 18.0001
+margin_bottom = 11.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -119,7 +99,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer"]
 margin_right = 54.0
 margin_bottom = 10.0
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = 1
 custom_constants/shadow_offset_y = 1
@@ -130,24 +110,53 @@ __meta__ = {
 }
 
 [node name="StatContainer" type="HBoxContainer" parent="CharacterDisplay/VBoxContainer"]
-margin_top = 10.0
+margin_top = 18.0
 margin_right = 54.0
-margin_bottom = 10.0
+margin_bottom = 18.0
 custom_constants/separation = 0
+
+[node name="CharacterContainer" type="NinePatchRect" parent="CharacterDisplay"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -42.0005
+margin_top = -24.0
+margin_right = 5.99982
+margin_bottom = 24.0
+rect_min_size = Vector2( 32, 32 )
+rect_pivot_offset = Vector2( 24, 24 )
+texture = SubResource( 3 )
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Human" parent="CharacterDisplay/CharacterContainer" instance=ExtResource( 4 )]
+flip_h = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CharacterDisplay/CharacterContainer"]
+anims/targetable = SubResource( 4 )
+
+[node name="Tween" type="Tween" parent="CharacterDisplay"]
+
+[node name="Action" type="Tween" parent="CharacterDisplay"]
+
+[node name="TargetGrow" type="Tween" parent="CharacterDisplay"]
+
+[node name="TargetShrink" type="Tween" parent="CharacterDisplay"]
 
 [node name="TextureRect" type="NinePatchRect" parent="CharacterDisplay"]
 show_behind_parent = true
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -35.0
+margin_left = 4.0
 margin_top = 9.0
-margin_right = 5.0
+margin_right = 44.0
 margin_bottom = 49.0
-rect_min_size = Vector2( 40, 40 )
 rect_scale = Vector2( 0.75, 0.75 )
 mouse_filter = 0
-size_flags_horizontal = 0
-size_flags_vertical = 0
 texture = SubResource( 5 )
 patch_margin_left = 16
 patch_margin_top = 16
@@ -162,11 +171,12 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -8.00005
+margin_left = -8.0001
 margin_top = -8.0
-margin_right = 8.00005
+margin_right = 8.0001
 margin_bottom = 8.0
 mouse_filter = 2
+expand = true
 stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
@@ -181,31 +191,13 @@ mouse_filter = 2
 texture = SubResource( 6 )
 expand = true
 stretch_mode = 6
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Tween" type="Tween" parent="CharacterDisplay"]
-playback_speed = 5.22
-playback/speed = 5.22
-
-[node name="Action" type="Tween" parent="CharacterDisplay"]
-
-[node name="TargetGrow" type="Tween" parent="CharacterDisplay"]
-
-[node name="TargetShrink" type="Tween" parent="CharacterDisplay"]
 
 [node name="Position2D" type="Position2D" parent="."]
-position = Vector2( 124, 24 )
-__meta__ = {
-"_gizmo_extents_": 21.7
-}
+position = Vector2( -10, 25 )
 
 [connection signal="gui_input" from="CharacterDisplay" to="." method="_on_CharacterDisplay_gui_input"]
-[connection signal="mouse_entered" from="CharacterDisplay" to="." method="_on_CharacterDisplay_mouse_entered"]
-[connection signal="mouse_exited" from="CharacterDisplay" to="." method="_on_CharacterDisplay_mouse_exited"]
-[connection signal="mouse_entered" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_entered"]
-[connection signal="mouse_exited" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_exited"]
 [connection signal="tween_completed" from="CharacterDisplay/Tween" to="." method="_on_Tween_tween_completed"]
 [connection signal="tween_completed" from="CharacterDisplay/TargetGrow" to="." method="_on_TargetGrow_tween_completed"]
 [connection signal="tween_completed" from="CharacterDisplay/TargetShrink" to="." method="_on_TargetShrink_tween_completed"]
+[connection signal="mouse_entered" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_entered"]
+[connection signal="mouse_exited" from="CharacterDisplay/TextureRect" to="." method="_on_TextureRect_mouse_exited"]
