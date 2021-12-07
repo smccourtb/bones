@@ -281,12 +281,10 @@ func action():
 		yield(sprite, "animation_finished")
 		sprite.play("Idle")
 		target.take_damage(face_choice.base_amount)
-	if face_choice.heal:
+	elif face_choice.heal:
 		target.set_health(target.get_health() + face_choice.base_amount)
-	if face_choice.block:
+	elif face_choice.block:
 		target.set_defense(face_choice.base_amount)
-	else:
-		return
 
 
 func reset():
