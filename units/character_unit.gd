@@ -198,15 +198,15 @@ func roll_die():
 
 
 func get_possible_targets():
-#	this is barebones right now but only sets an animation the scaling character
-#	container.
+	# this is barebones right now but only sets an animation the scaling character
+	# container.
 	var targets
 	if face_choice.hostile:
 		targets = get_tree().get_nodes_in_group("enemy")
 	else:
 		targets = get_tree().get_nodes_in_group("player")
-	for i in targets:
-		i.set_targetable(true)
+	for target in targets:
+		target.set_targetable(true)
 
 
 func set_targetable(value: bool) -> void:
@@ -227,20 +227,19 @@ func set_targetable(value: bool) -> void:
 
 
 func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
-#	this is used during the players turn phase for picking targets
-#	its a bit awkard to account for deselecting unit by clicking outside the parent
-#	so you can pick targets in any order you'd like
+	# this is used during the players turn phase for picking targets
+	# its a bit awkard to account for deselecting unit by clicking outside the parent
+	# so you can pick targets in any order you'd like
 	if event is InputEventMouseButton:
-		if event.button_index == 1 and event.pressed:
+		if event.button_index == BUTTON_LEFT and event.is_pressed():
 			if Global.turn_phase == "target":
-				if get_parent().get_parent().current_attacker == self  && (face_choice.name == 'Miss' || target):
+				if get_parent().get_parent().current_attacker == self  and (face_choice.name == 'Miss' or target):
 					return
-				if !get_parent().get_parent().current_attacker && (face_choice.name == 'Miss' || target):
+				if not get_parent().get_parent().current_attacker and (face_choice.name == 'Miss' or target):
 					return
-				if get_parent().get_parent().current_attacker && get_parent().get_parent().current_attacker.face_choice.name != 'Miss':
+				if get_parent().get_parent().current_attacker and not get_parent().get_parent().current_attacker.face_choice.name == 'Miss':
 					emit_signal("target_selected", self)
-				elif !get_parent().get_parent().current_attacker && face_choice.name != 'Miss':
-	
+				elif not get_parent().get_parent().current_attacker and not face_choice.name == 'Miss':
 					get_parent().get_parent().set_current_attacker(self)
 
 
@@ -276,17 +275,17 @@ func set_selected(new_value: bool):
 func action():
 #	this function will get bigger and more detailed in the future. the perform
 #	action logic. the mothods it calls are the recieving action logic
+	if face_choice.sound:
+		SFX.play(face_choice.sound) # Play action sound when triggered
 	if face_choice.hostile:
 		sprite.play("Attack")
 		yield(sprite, "animation_finished")
 		sprite.play("Idle")
 		target.take_damage(face_choice.base_amount)
-	if face_choice.heal:
+	elif face_choice.heal:
 		target.set_health(target.get_health() + face_choice.base_amount)
-	if face_choice.block:
+	elif face_choice.block:
 		target.set_defense(face_choice.base_amount)
-	else:
-		return
 
 
 func reset():

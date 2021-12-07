@@ -1,7 +1,8 @@
-[gd_resource type="Resource" load_steps=3 format=2]
+[gd_resource type="Resource" load_steps=4 format=2]
 
 [ext_resource path="res://actions/action.gd" type="Script" id=1]
 [ext_resource path="res://assets/faces/miss.png" type="Texture" id=2]
+[ext_resource path="res://assets/sounds/miss.wav" type="AudioStream" id=3]
 
 [resource]
 script = ExtResource( 1 )
@@ -14,3 +15,4 @@ heal = false
 block = false
 damage = false
 texture = ExtResource( 2 )
+sound = ExtResource( 3 )
