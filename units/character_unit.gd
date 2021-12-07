@@ -54,11 +54,15 @@ func set_health(new_health: int) -> void:
 
 func set_target_selected(value: bool):
 	if value:
+#		hrinks the entire CharacterUnit to indicate a target has been selected
+#		and it is out of active state
 		tween.interpolate_property($CharacterDisplay, "rect_scale",
 			null, Vector2(.9, .9), 1,
 			Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 		tween.start()
 	target_selected = value
+#	disconnects the mouse over signals of the CharacterUnit so it wont appear 
+#	active anymore
 	if character_display.is_connected("mouse_entered", self, "_on_CharacterDisplay_mouse_entered"):
 		character_display.disconnect("mouse_entered", self, "_on_CharacterDisplay_mouse_entered")
 		character_display.disconnect("mouse_exited", self, "_on_CharacterDisplay_mouse_exited")
@@ -127,7 +131,7 @@ func _on_Selected(action: Action):
 	emit_signal("action_selected", true)
 
 
-func enter_roll_phase():
+func roll_die():
 	if is_instance_valid(die):
 		add_child(die)
 	else:
@@ -135,6 +139,7 @@ func enter_roll_phase():
 		add_child(die)
 	die.connect("die_selected", self, "_on_Selected")
 	die.build_die(die_faces, color)
+#	apply a random push(?) so each die falls differently. Not positive this works
 	die.apply_impulse(die.translation, Vector3(randf(),randf(),randf()))
 
 
