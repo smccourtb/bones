@@ -198,15 +198,15 @@ func roll_die():
 
 
 func get_possible_targets():
-#	this is barebones right now but only sets an animation the scaling character
-#	container.
+	# this is barebones right now but only sets an animation the scaling character
+	# container.
 	var targets
 	if face_choice.hostile:
 		targets = get_tree().get_nodes_in_group("enemy")
 	else:
 		targets = get_tree().get_nodes_in_group("player")
-	for i in targets:
-		i.set_targetable(true)
+	for target in targets:
+		target.set_targetable(true)
 
 
 func set_targetable(value: bool) -> void:
