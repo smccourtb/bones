@@ -1,12 +1,5 @@
 extends "res://units/character_unit.gd"
 
-func _on_Tween_tween_all_completed() -> void:
-	die.sleeping = true
-	die.reset()
-	if face_choice: 
-		remove_child(die)
-		get_node("CharacterDisplay/TextureRect/ActionChoice").texture = face_choice.texture.duplicate()
-
 
 func choose_target():
 #	total amount of possible targets
@@ -75,14 +68,14 @@ func roll_die():
 
 
 func _on_RollSet(action: Action):
-	print("ACTION: ", action)
 #	sets die_selected to true for.... some.. reason
 #	AH OKAY i looked back and checked. As far as i csan tell this is only used 
 #	in main.gd where it checks if the player has all its dice selected. It
 #	doesn't work. So im going to comment it out but leave it for now.
 #	die_selected = true
 
-#	This makes the die shrink into nothingness on selection
+#	This makes the die shrink into nothingness on selection. same thing as
+#	_on_Selected under character_die.gd
 	tween.interpolate_property(die, "scale",
 		die.scale, Vector3(0,0,0), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)

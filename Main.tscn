@@ -1,10 +1,10 @@
 [gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
-[ext_resource path="res://assets/forgotten-plains.png" type="Texture" id=2]
-[ext_resource path="res://scenes/Units.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/tilesets/forgotten-plains.png" type="Texture" id=2]
+[ext_resource path="res://units/Units.tscn" type="PackedScene" id=3]
 [ext_resource path="res://character_resources/human.tres" type="Resource" id=9]
-[ext_resource path="res://m5x7.ttf" type="DynamicFontData" id=10]
+[ext_resource path="res://assets/font/m5x7.ttf" type="DynamicFontData" id=10]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0.705882, 0.109804, 0.109804, 1 )

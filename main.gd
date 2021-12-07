@@ -100,7 +100,7 @@ func _on_targetPhase_begin() -> void:
 #		the world. Hm.
 		for enemy in enemies.get_children():
 #			it doesnt matter if they roll a miss or not. its handled inside the
-#			function choose target AND set_enemy) target. It doesn't matter
+#			function choose_target() AND set_enemy_target(). It doesn't matter
 #			because it loops through all chooses a target if it can and then
 #			moves on regardless. With the player you need to wait for input.
 			if not enemy.face_choice.name == "Miss":
@@ -203,6 +203,8 @@ func _on_combatPhase_end() -> void:
 
 
 func _on_ActionsSelected() -> void:
+#	this is an odd situation becuase its separate from the other logic
+#	used in the other turn phase functions. emitted from units.gd
 #	called when all actions(die) on either side are selected
 	if not turn_owner: # if enemy turn
 		yield(get_tree().create_timer(1.0), "timeout")
@@ -231,7 +233,6 @@ func check_for_win() -> bool:
 func _on_Reroll_pressed() -> void:
 #	subtract 1 reroll action from total rerolls
 	set_reroll(1)
-	
 #	roll all available player dice
 	var dice = get_tree().get_nodes_in_group("die")
 	for die in dice:
