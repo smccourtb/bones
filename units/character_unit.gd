@@ -227,20 +227,19 @@ func set_targetable(value: bool) -> void:
 
 
 func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
-#	this is used during the players turn phase for picking targets
-#	its a bit awkard to account for deselecting unit by clicking outside the parent
-#	so you can pick targets in any order you'd like
+	# this is used during the players turn phase for picking targets
+	# its a bit awkard to account for deselecting unit by clicking outside the parent
+	# so you can pick targets in any order you'd like
 	if event is InputEventMouseButton:
-		if event.button_index == 1 and event.pressed:
+		if event.button_index == BUTTON_LEFT and event.is_pressed():
 			if Global.turn_phase == "target":
-				if get_parent().get_parent().current_attacker == self  && (face_choice.name == 'Miss' || target):
+				if get_parent().get_parent().current_attacker == self  and (face_choice.name == 'Miss' or target):
 					return
-				if !get_parent().get_parent().current_attacker && (face_choice.name == 'Miss' || target):
+				if not get_parent().get_parent().current_attacker and (face_choice.name == 'Miss' or target):
 					return
-				if get_parent().get_parent().current_attacker && get_parent().get_parent().current_attacker.face_choice.name != 'Miss':
+				if get_parent().get_parent().current_attacker and not get_parent().get_parent().current_attacker.face_choice.name == 'Miss':
 					emit_signal("target_selected", self)
-				elif !get_parent().get_parent().current_attacker && face_choice.name != 'Miss':
-	
+				elif not get_parent().get_parent().current_attacker and not face_choice.name == 'Miss':
 					get_parent().get_parent().set_current_attacker(self)
 
 
