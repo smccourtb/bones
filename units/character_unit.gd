@@ -299,9 +299,9 @@ func targeted_shrink():
 	target_shrink_tween.start()
 
 
-func _on_TargetGrow_tween_completed(object: Object, key: NodePath) -> void:
+func _on_TargetGrow_tween_completed(_object: Object, _key: NodePath) -> void:
 	targeted_shrink()
 
 
-func _on_TargetShrink_tween_completed(object: Object, key: NodePath) -> void:
+func _on_TargetShrink_tween_completed(_object: Object, _key: NodePath) -> void:
 	targeted_grow()

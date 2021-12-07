@@ -143,6 +143,8 @@ func _on_combatPhase_begin() -> void:
 
 func _on_combatPhase_end() -> void:
 	print("EXITING COMBAT PHASE")
+	# reset actions
+	# increase round num <- no functionality to that yet
 	round_num +=1
 	rerolls = 2
 	turn_owner = false
@@ -151,8 +153,7 @@ func _on_combatPhase_end() -> void:
 	units.player_targets_selected = 0
 	
 	button.set_disabled(false)
-	# reset actions
-	# increase round num
+	
 	for i in units.unit_refs:
 		if is_instance_valid(i):
 			i.reset()
@@ -182,7 +183,8 @@ func setup_signals() -> void:
 
 
 func check_for_win() -> bool:
-	for enemy in enemies.get_children():
-		if not enemy.disabled:
-			return false
+#	we could use get_nodes_in_group("enemies") but we already have the 
+#	reference
+	if enemies.get_children().size() > 0:
+		return false
 	return true
