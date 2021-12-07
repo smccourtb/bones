@@ -275,6 +275,8 @@ func set_selected(new_value: bool):
 func action():
 #	this function will get bigger and more detailed in the future. the perform
 #	action logic. the mothods it calls are the recieving action logic
+	if face_choice.sound:
+		SFX.play(face_choice.sound) # Play action sound when triggered
 	if face_choice.hostile:
 		sprite.play("Attack")
 		yield(sprite, "animation_finished")
