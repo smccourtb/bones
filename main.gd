@@ -48,7 +48,7 @@ func set_reroll(amount) -> void:
 		rerolls = 0
 
 
-func _on_Roll_Phase_Begin() -> void:
+func _on_rollPhase_begin() -> void:
 	print("ENTERING ROLL PHASE")
 	Global.turn_phase = "roll"
 #	begins game as enemy turn
@@ -61,7 +61,7 @@ func _on_Roll_Phase_Begin() -> void:
 			enemy.roll_die()
 
 
-func _on_Roll_Phase_End() -> void:
+func _on_rollPhase_end() -> void:
 	print("EXITING ROLL PHASE")
 #	this was used to auto select an un selected die when the player ran out
 #	of rerolls. Doesn't get called anymore. Haven't really looked into it and
@@ -99,6 +99,10 @@ func _on_targetPhase_begin() -> void:
 #		as of right now, 12/6/21, an enemy can roll a miss and all is well with
 #		the world. Hm.
 		for enemy in enemies.get_children():
+#			it doesnt matter if they roll a miss or not. its handled inside the
+#			function choose target AND set_enemy) target. It doesn't matter
+#			because it loops through all chooses a target if it can and then
+#			moves on regardless. With the player you need to wait for input.
 			if not enemy.face_choice.name == "Miss":
 				enemy.choose_target()
 #		triggers the end of target phase
@@ -207,8 +211,8 @@ func _on_ActionsSelected() -> void:
 
 func setup_signals() -> void:
 #	these signals control the flow of the phases of battle
-	connect("roll_phase_begin", self, "_on_Roll_Phase_Begin")
-	connect("roll_phase_end", self, "_on_Roll_Phase_End")	
+	connect("roll_phase_begin", self, "_on_rollPhase_begin")
+	connect("roll_phase_end", self, "_on_rollPhase_end")	
 	connect("target_phase_end", self, "_on_targetPhase_end")
 	connect("target_phase_begin", self, "_on_targetPhase_begin")
 	connect("combat_phase_begin", self, "_on_combatPhase_begin")
