@@ -53,8 +53,6 @@ func _on_Stopped():
 		connect("input_event", self, "_on_CharacterDie_input_event")
 		connect("mouse_entered", self, "_on_CharacterDie_mouse_entered")
 		connect("mouse_exited", self, "_on_CharacterDie_mouse_exited")
-	
-	
 	emit_signal("roll_set", actions[roll])
 
 

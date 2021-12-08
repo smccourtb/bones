@@ -1,10 +1,12 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://assets/font/m5x7.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://units/character_unit.gd" type="Script" id=2]
 [ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/ui/ui-selectors.png" type="Texture" id=4]
 [ext_resource path="res://assets/ui/panels_green.png" type="Texture" id=5]
+[ext_resource path="res://assets/faces/defend.png" type="Texture" id=6]
+[ext_resource path="res://assets/faces/heal.png" type="Texture" id=7]
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
@@ -38,13 +40,21 @@ tracks/0/keys = {
 size = 12
 font_data = ExtResource( 1 )
 
-[sub_resource type="AtlasTexture" id=5]
+[sub_resource type="DynamicFont" id=5]
+size = 12
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 12
+font_data = ExtResource( 1 )
+
+[sub_resource type="AtlasTexture" id=7]
 resource_local_to_scene = true
 flags = 16
 atlas = ExtResource( 5 )
 region = Rect2( 8, 8, 32, 32 )
 
-[sub_resource type="AtlasTexture" id=6]
+[sub_resource type="AtlasTexture" id=8]
 flags = 16
 atlas = ExtResource( 4 )
 region = Rect2( 32, 48, 16, 16 )
@@ -109,15 +119,15 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -19.0
 margin_top = -12.5
-margin_right = 35.0
-margin_bottom = 10.5
+margin_right = 37.0
+margin_bottom = 13.5
 custom_constants/separation = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer"]
-margin_right = 54.0
+margin_right = 56.0
 margin_bottom = 10.0
 custom_fonts/font = SubResource( 4 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
@@ -131,9 +141,46 @@ __meta__ = {
 
 [node name="StatContainer" type="HBoxContainer" parent="CharacterDisplay/VBoxContainer"]
 margin_top = 10.0
-margin_right = 54.0
-margin_bottom = 10.0
+margin_right = 56.0
+margin_bottom = 26.0
+custom_constants/separation = 13
+
+[node name="Health" type="HBoxContainer" parent="CharacterDisplay/VBoxContainer/StatContainer"]
+margin_right = 19.0
+margin_bottom = 16.0
+custom_constants/separation = -2
+
+[node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer/StatContainer/Health"]
+margin_top = 3.0
+margin_right = 5.0
+margin_bottom = 13.0
+custom_fonts/font = SubResource( 5 )
+text = "1"
+
+[node name="TextureRect" type="TextureRect" parent="CharacterDisplay/VBoxContainer/StatContainer/Health"]
+margin_left = 3.0
+margin_right = 19.0
+margin_bottom = 16.0
+texture = ExtResource( 7 )
+
+[node name="Defense" type="HBoxContainer" parent="CharacterDisplay/VBoxContainer/StatContainer"]
+margin_left = 32.0
+margin_right = 53.0
+margin_bottom = 16.0
 custom_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="CharacterDisplay/VBoxContainer/StatContainer/Defense"]
+margin_right = 16.0
+margin_bottom = 16.0
+texture = ExtResource( 6 )
+
+[node name="Label" type="Label" parent="CharacterDisplay/VBoxContainer/StatContainer/Defense"]
+margin_left = 16.0
+margin_top = 3.0
+margin_right = 21.0
+margin_bottom = 13.0
+custom_fonts/font = SubResource( 6 )
+text = "1"
 
 [node name="TextureRect" type="NinePatchRect" parent="CharacterDisplay"]
 show_behind_parent = true
@@ -148,7 +195,7 @@ rect_scale = Vector2( 0.75, 0.75 )
 mouse_filter = 0
 size_flags_horizontal = 0
 size_flags_vertical = 0
-texture = SubResource( 5 )
+texture = SubResource( 7 )
 patch_margin_left = 16
 patch_margin_top = 16
 patch_margin_right = 16
@@ -178,7 +225,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 rect_pivot_offset = Vector2( 20, 20 )
 mouse_filter = 2
-texture = SubResource( 6 )
+texture = SubResource( 8 )
 expand = true
 stretch_mode = 6
 __meta__ = {

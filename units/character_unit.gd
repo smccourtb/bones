@@ -78,15 +78,22 @@ func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	action_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
 #	 trying to implement setters and getters for things so they are more clean
 	set_health(data.health)
+	set_defense(data.defense)
+	
 #	base die is a level 0 die and actions to represent that. just a dict of actions
 #	the 'base die' comes with. Also has a possible pool array for unlocking in the
 # 	future. Haven't gotten there yet so its not apparent here atm.
 	die_faces = data.base_die
 
 
-func set_health(new_health: int) -> void:
+func set_health(health_mod: int) -> void:
+	var new_health = self.health + health_mod
+	if new_health < 0:
+		new_health = 0
 	self.health = new_health
 	update_health_ui()
+	if self.health < 1:
+		_die()
 
 
 func set_target_selected(value: bool):
@@ -106,17 +113,8 @@ func set_target_selected(value: bool):
 
 
 func update_health_ui():
-#	TODO: change to either queue_free() some nodes or instance and add some nodes
-#	its jarring right now, you can see a quick flash from the wipe and refill
-	for n in stat_container.get_children():
-#		deletes all heart icons in stat container
-		n.queue_free()
-	if health == 0:
-		return
-	for _i in range(health):
-#		adds back as many as equal to health value
-		var health_ui = health_icon.instance()
-		stat_container.add_child(health_ui)
+	var health_label = stat_container.get_node("Health/Label")
+	health_label.set_text(str(get_health()))
 
 
 func get_health() -> int:
@@ -135,23 +133,32 @@ func set_target(new_target):
 
 
 func take_damage(damage: int) -> void:
-#	TODO: take characters defense into account when setting health
-#	use set defense function
+	var actual_damage = get_defense() - damage
+	if actual_damage <= 0:
+		set_defense(-get_defense())
+		set_health(actual_damage)
+	else:
+		set_defense(-(damage))
 	sprite.play("Hurt")
 	yield(sprite, "animation_finished")
 	sprite.play("Idle")
-	var new_health: int = health + defense - damage
-	if new_health > 0:
-		set_health(new_health)
-	else:
-		_die()
+	
 
 
-func set_defense(new_defense: int) -> void:
+func set_defense(defense_mod: int) -> void:
+	var new_defense = defense + defense_mod
+	if new_defense < 0:
+		new_defense = 0
 	defense = new_defense
+	update_defense_ui()
+
 
 func get_defense() -> int:
-	return defense
+	return self.defense
+
+func update_defense_ui():
+	var defense_label = stat_container.get_node("Defense/Label")
+	defense_label.set_text(str(get_defense()))
 
 func _die() -> void:
 	sprite.play("Die")
@@ -162,7 +169,7 @@ func _die() -> void:
 
 func _on_Selected(action: Action):
 #	see this should be the action_selected function that sits empty somehwere in here
-#	called as a player only. Enemy units do not use this they use _on_RollSet()
+#	called as a player only. Enemy units do not use this, they use _on_RollSet()
 #	called when a player clicks on their die on roll phase
 	die_selected = true
 #	action_container sits behind character_display when not active. setting
@@ -194,6 +201,7 @@ func roll_die():
 #	map actions to die and set textures. set it up and add it to the tree
 	die.build_die(die_faces, color)
 #	apply a random push(?) so each die falls differently. Not positive this works
+	randomize()
 	die.apply_impulse(die.translation, Vector3(randf(),randf(),randf()))
 
 
@@ -283,7 +291,7 @@ func action():
 		sprite.play("Idle")
 		target.take_damage(face_choice.base_amount)
 	elif face_choice.heal:
-		target.set_health(target.get_health() + face_choice.base_amount)
+		target.set_health(face_choice.base_amount)
 	elif face_choice.block:
 		target.set_defense(face_choice.base_amount)
 

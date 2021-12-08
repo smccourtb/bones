@@ -38,6 +38,7 @@ func _physics_process(_delta: float) -> void:
 	
 #	hides button unless its players roll phase
 	reroll_button.visible = Global.turn_phase == "roll" and turn_owner
+	reroll_button.set_disabled(rerolls < 1)
 
 
 func set_reroll(amount) -> void:
@@ -46,6 +47,7 @@ func set_reroll(amount) -> void:
 	if rerolls <= 0:
 		reroll_button.set_disabled(true)
 		rerolls = 0
+	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
 
 
 func _on_rollPhase_begin() -> void:
@@ -57,8 +59,12 @@ func _on_rollPhase_begin() -> void:
 		for player in players.get_children():
 			player.roll_die()
 	else:
+#		TODO: if an enemy dies, the game gets held up here waiting for a dead
+#			  enemy to roll their die. FIXME
+#		temp solution right here. not tested yet
 		for enemy in enemies.get_children():
-			enemy.roll_die()
+			if is_instance_valid(enemy):
+				enemy.roll_die()
 
 
 func _on_rollPhase_end() -> void:
@@ -240,3 +246,6 @@ func _on_Reroll_pressed() -> void:
 #		would be nice make it feel a bit more 'realistic'
 		die.set_gravity_scale(4)
 		die.apply_impulse(die.translation, Vector3(randi() % 5 + .5, randi() % 5 + .5, randi() % 5 + .5))
+		yield(get_tree().create_timer(.1), "timeout")
+		die.set_physics_process(true)
+		
