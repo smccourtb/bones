@@ -62,7 +62,7 @@ func _process(_delta: float) -> void:
 	# units.gd blocks the screen from mouse input. i need it during roll phase
 	# to be able to click on the die but other times i need to be able to click
 	# on the character portraits. I know it doesnt make much sense. Im tired.
-	if Global.turn_phase == "roll":
+	if Global.turn_phase == Global.TurnPhase.ROLL:
 		mouse_filter = MOUSE_FILTER_IGNORE
 	else:
 		mouse_filter = MOUSE_FILTER_PASS
@@ -184,7 +184,7 @@ func _on_TargetSelected(who) -> void:
 # TODO: add 'to' type
 func set_current_attacker(to) -> void:
 	# blocks mouse input when not in target phase
-	if Global.turn_phase == "target":
+	if Global.turn_phase == Global.TurnPhase.TARGET:
 		# swap attackers if any
 		if current_attacker:
 			current_attacker.set_current_attacker(false)

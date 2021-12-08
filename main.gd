@@ -33,12 +33,12 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-#	debugging purposes. Updates the phase and whose turn it is
+	# debugging purposes. Updates the phase and whose turn it is
 	units.turn_label.text = "Player Turn" if turn_owner else "Enemy Turn"
-	units.phase_label.text = "Phase: " + Global.turn_phase.capitalize()
+	units.phase_label.text = "Phase: " + Global.get_turn_phase_name()
 	
-#	hides button unless its players roll phase
-	reroll_button.visible = Global.turn_phase == "roll" and turn_owner
+	# hides button unless its players roll phase
+	reroll_button.visible = Global.turn_phase == Global.TurnPhase.ROLL and turn_owner
 
 
 func set_reroll(amount) -> void:
@@ -57,7 +57,7 @@ func get_reroll() -> int:
 
 func _on_rollPhase_begin() -> void:
 	print("ENTERING ROLL PHASE")
-	Global.turn_phase = "roll"
+	Global.turn_phase = Global.TurnPhase.ROLL
 #	begins game as enemy turn
 #	loops through all units for whosever turn it is and rolls their die
 	if turn_owner:
@@ -81,7 +81,7 @@ func _on_rollPhase_end() -> void:
 func _on_targetPhase_begin() -> void:
 	print("ENTERING TARGET PHASE")
 #	updates the debug "phase" label
-	Global.turn_phase = "target"
+	Global.turn_phase = Global.TurnPhase.TARGET
 #	loops through all player units, checks if there are any misses and sets the 
 #	target to null but still triggers the target selected signal so it can increase
 #	the count for the signal actions_selected
@@ -129,7 +129,7 @@ func _on_targetPhase_end() -> void:
 
 func _on_combatPhase_begin() -> void:
 	print("ENTERING COMBAT PHASE")
-	Global.turn_phase = "combat"
+	Global.turn_phase = Global.TurnPhase.COMBAT
 	
 	if turn_owner:
 #		loops through all player units and checks if they have a target, then
