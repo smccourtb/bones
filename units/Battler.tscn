@@ -1,0 +1,167 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://assets/ui/health_icon.png" type="Texture" id=1]
+[ext_resource path="res://assets/font/m5x7.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=3]
+[ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/ui/defense_icon.png" type="Texture" id=5]
+[ext_resource path="res://assets/faces/heal.png" type="Texture" id=6]
+[ext_resource path="res://assets/ui/action_choice_background.png" type="Texture" id=7]
+[ext_resource path="res://units/battler.gd" type="Script" id=8]
+
+[sub_resource type="AtlasTexture" id=1]
+resource_local_to_scene = true
+flags = 16
+atlas = ExtResource( 3 )
+region = Rect2( 472, 264, 64, 64 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 12
+outline_size = 1
+outline_color = Color( 0, 0, 0, 0.784314 )
+font_data = ExtResource( 2 )
+
+[node name="Battler" type="Control"]
+mouse_filter = 2
+size_flags_horizontal = 3
+script = ExtResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BattlerContainer" type="NinePatchRect" parent="."]
+margin_right = 48.0
+margin_bottom = 48.0
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+texture = SubResource( 1 )
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Human" parent="BattlerContainer" instance=ExtResource( 4 )]
+position = Vector2( 8, 8 )
+centered = false
+
+[node name="StatContainer" type="HBoxContainer" parent="BattlerContainer"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -15.0
+margin_bottom = -3.0
+size_flags_horizontal = 3
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HealthContainer" type="CenterContainer" parent="BattlerContainer/StatContainer"]
+margin_right = 24.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="HealthIcon" type="TextureRect" parent="BattlerContainer/StatContainer/HealthContainer"]
+margin_left = 5.0
+margin_right = 19.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 14, 14 )
+texture = ExtResource( 1 )
+stretch_mode = 6
+
+[node name="HeathLabel" type="Label" parent="BattlerContainer/StatContainer/HealthContainer/HealthIcon"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1.0
+custom_fonts/font = SubResource( 2 )
+text = "1"
+align = 2
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DefenseContainer" type="CenterContainer" parent="BattlerContainer/StatContainer"]
+margin_left = 24.0
+margin_right = 48.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="DefenseIcon" type="TextureRect" parent="BattlerContainer/StatContainer/DefenseContainer"]
+margin_left = 5.0
+margin_right = 19.0
+margin_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 0
+rect_min_size = Vector2( 14, 14 )
+texture = ExtResource( 5 )
+stretch_mode = 5
+
+[node name="DefenseLabel" type="Label" parent="BattlerContainer/StatContainer/DefenseContainer/DefenseIcon"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1.0
+custom_fonts/font = SubResource( 2 )
+text = "10"
+align = 2
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionContainer" type="NinePatchRect" parent="BattlerContainer"]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -3.0
+margin_top = -9.0
+margin_right = 15.0
+margin_bottom = 9.0
+rect_min_size = Vector2( 18, 18 )
+rect_pivot_offset = Vector2( 9, 9 )
+mouse_filter = 0
+texture = ExtResource( 7 )
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionChoice" type="TextureRect" parent="BattlerContainer/ActionContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -8.0
+margin_top = -8.0
+margin_right = 8.0
+margin_bottom = 8.0
+mouse_filter = 2
+texture = ExtResource( 6 )
+
+[node name="Targeted" type="TextureRect" parent="BattlerContainer/ActionContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="Action" type="Tween" parent="."]
+
+[node name="TargetGrow" type="Tween" parent="."]
+
+[node name="TargetShrink" type="Tween" parent="."]
+
+[connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
+[connection signal="mouse_entered" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_entered"]
+[connection signal="mouse_exited" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_exited"]
+[connection signal="mouse_entered" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_entered"]
+[connection signal="mouse_exited" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_exited"]
+[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]

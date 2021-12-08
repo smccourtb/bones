@@ -1,5 +1,5 @@
-extends "res://units/character_unit.gd"
-
+extends Battler
+class_name Enemy
 
 func choose_target():
 #	total amount of possible targets
@@ -36,7 +36,7 @@ func set_enemy_target(choice: String, side: bool):
 	if int(choice) == -1:
 		return
 	if side:
-		target = get_parent().get_node("../PlayerUnits/"+ choice)
+		target = get_parent().get_node("../PlayerBattlers/"+ choice)
 	else:
 		target = get_parent().get_node(str(int(choice) + 5))
 #	like i said about target_selected above, and in main.gd as far as the enemy
@@ -82,9 +82,11 @@ func _on_RollSet(action: Action):
 #	this slides that box out from behind the CharacterUnit control node
 #	TODO: move to own function with a parameter for the first position in the 
 #	vector2 (-19). That way it can be used on either side. 
-	tween.interpolate_property(action_container, "rect_position",
-		null, Vector2(-19, action_container.rect_position.y), .3,
-		Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	action_container.set_scale(Vector2(0,0))
+	action_container.set_visible(true)
+	tween.interpolate_property(action_container, "rect_scale",
+		null, Vector2(1,1), .3,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
 #	sets the action. face_choice is a stupid variable name and will be replaced soon
 	face_choice = action
@@ -124,3 +126,4 @@ func action_tween_end():
 	action_tween.interpolate_property(character_display, 'rect_position', null,
 	Vector2(character_display.rect_position.x + 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	action_tween.start()
+

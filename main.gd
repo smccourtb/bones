@@ -15,8 +15,8 @@ var turn_owner: bool = false # if true player turn, false: enemy
 
 # node references
 onready var units = $Units
-onready var players = $Units/PlayerUnits
-onready var enemies = $Units/EnemyUnits
+onready var players = $Units/HBoxContainer/PlayerBattlers
+onready var enemies = $Units/HBoxContainer/EnemyBattlers
 onready var reroll_button = $Reroll
 onready var win_message = $WinMessage
 
@@ -25,6 +25,7 @@ onready var win_message = $WinMessage
 
 func _ready() -> void:
 	setup_signals()
+	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
 	randomize()
 #	TODO: add an "{ begin / end } { current_phase } Phase" button to call this
 #		  and the other phases. One button for all logic.
@@ -38,17 +39,21 @@ func _physics_process(_delta: float) -> void:
 	
 #	hides button unless its players roll phase
 	reroll_button.visible = Global.turn_phase == "roll" and turn_owner
-	reroll_button.set_disabled(rerolls < 1)
 
 
 func set_reroll(amount) -> void:
 #	subtracts the amount provided from reroll.
-	rerolls -= amount
+	rerolls += amount
 	if rerolls <= 0:
 		reroll_button.set_disabled(true)
 		rerolls = 0
+	if amount > 2:
+		rerolls = 2
 	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
+	reroll_button.set_disabled(rerolls < 1)
 
+func get_reroll() -> int:
+	return rerolls
 
 func _on_rollPhase_begin() -> void:
 	print("ENTERING ROLL PHASE")
@@ -183,7 +188,7 @@ func _on_combatPhase_end() -> void:
 #	for the next round, if there is no winner
 	round_num +=1 # <- no functionality to that yet
 #	resets rerolls
-	rerolls = 2
+	set_reroll(2)
 #	sets turn_owner to enemy
 	turn_owner = false
 	
@@ -238,7 +243,7 @@ func check_for_win() -> bool:
 
 func _on_Reroll_pressed() -> void:
 #	subtract 1 reroll action from total rerolls
-	set_reroll(1)
+	set_reroll(-1)
 #	roll all available player dice
 	var dice = get_tree().get_nodes_in_group("die")
 	for die in dice:

@@ -25,33 +25,6 @@ enemy_loadout = {
 "6": ExtResource( 4 )
 }
 
-[node name="PlayerUnits" type="VBoxContainer" parent="."]
-margin_left = 10.0
-margin_top = 50.0
-margin_right = 150.0
-margin_bottom = 222.0
-rect_min_size = Vector2( 0, 206 )
-mouse_filter = 2
-custom_constants/separation = -11
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="EnemyUnits" type="VBoxContainer" parent="."]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -150.0
-margin_top = 50.0
-margin_right = -10.0
-margin_bottom = 256.0
-grow_horizontal = 0
-rect_min_size = Vector2( 0, 206 )
-custom_constants/separation = 0
-alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="TurnOwnerLabel" type="Label" parent="."]
 margin_left = 308.651
 margin_top = 243.475
@@ -68,6 +41,44 @@ margin_top = 244.599
 margin_right = 223.168
 margin_bottom = 269.599
 custom_fonts/font = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+custom_constants/separation = 449
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PlayerBattlers" type="VBoxContainer" parent="HBoxContainer"]
+margin_right = 15.0
+margin_bottom = 270.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 50
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EnemyBattlers" type="VBoxContainer" parent="HBoxContainer"]
+margin_left = 464.0
+margin_right = 480.0
+margin_bottom = 270.0
+grow_horizontal = 0
+grow_vertical = 0
+rect_min_size = Vector2( 0, 206 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/separation = 50
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

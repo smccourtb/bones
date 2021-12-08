@@ -1,5 +1,5 @@
 extends Control
-
+class_name Battler
 # connected to: units.gd - during _setup_player and _setup_enemy
 
 # triggered when A) a die is clicked on during the roll phase (player)
@@ -36,25 +36,25 @@ var disabled: bool = false
 onready var die = preload("res://dice/CharacterDie.tscn").instance()
 # animations when the ability to be targeted is true. used in tandem while 
 # targetable is true
-onready var target_grow_tween = get_node("CharacterDisplay/TargetGrow")
-onready var target_shrink_tween = get_node("CharacterDisplay/TargetShrink")
+onready var target_grow_tween = get_node("TargetGrow")
+onready var target_shrink_tween = get_node("TargetShrink")
 # the combat - slide forward and back animation
-onready var action_tween = get_node("CharacterDisplay/Action")
-onready var tween = get_node("CharacterDisplay/Tween")
+onready var action_tween = get_node("Action")
+onready var tween = get_node("Tween")
 # animation node ref for the character sprites animations
-onready var sprite = get_node("CharacterDisplay/CharacterContainer/Human/AnimationPlayer")
+onready var sprite = get_node("BattlerContainer/Human/AnimationPlayer")
 # used to represent character health
-onready var health_icon = preload("res://scenes/HealthIcon.tscn")
+#onready var health_icon = preload("res://scenes/HealthIcon.tscn")
 # the main container under the root control node
-onready var character_display = get_node("CharacterDisplay")
+onready var character_display = get_node("BattlerContainer")
 # the container tht holds the name and stats
-onready var character_container = get_node("CharacterDisplay/CharacterContainer")
+#onready var character_container = get_node("CharacterDisplay/CharacterContainer")
 # holds stat ui and info
-onready var stat_container = get_node("CharacterDisplay/VBoxContainer/StatContainer")
+onready var stat_container = get_node("BattlerContainer/StatContainer")
 # the square the slides out from behind character_display when an action is chosen
-onready var action_container = get_node("CharacterDisplay/TextureRect")
+onready var action_container = get_node("BattlerContainer/ActionContainer")
 # red recticle that grows and shrinks when targeted
-onready var target_indicator = get_node("CharacterDisplay/TextureRect/Targeted")
+onready var target_indicator = get_node("BattlerContainer/ActionContainer/Targeted")
 
 
 func _ready() -> void:
@@ -74,8 +74,8 @@ func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	color = die_color
 #	this is here so they can load dynamically. 
 	character_display.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	character_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	action_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
+#	character_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
+#	action_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
 #	 trying to implement setters and getters for things so they are more clean
 	set_health(data.health)
 	set_defense(data.defense)
@@ -100,20 +100,20 @@ func set_target_selected(value: bool):
 	if value:
 #		Shrinks the entire CharacterUnit to indicate a target has been selected
 #		and it is out of active state
-		tween.interpolate_property($CharacterDisplay, "rect_scale",
+		tween.interpolate_property($BattlerContainer, "rect_scale",
 			null, Vector2(.9, .9), 1,
 			Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 		tween.start()
 	target_selected = value
 #	disconnects the mouse over signals of the CharacterUnit so it wont appear 
 #	active anymore
-	if character_display.is_connected("mouse_entered", self, "_on_CharacterDisplay_mouse_entered"):
-		character_display.disconnect("mouse_entered", self, "_on_CharacterDisplay_mouse_entered")
-		character_display.disconnect("mouse_exited", self, "_on_CharacterDisplay_mouse_exited")
+	if character_display.is_connected("mouse_entered", self, "_on_BattlerContainer_mouse_entered"):
+		character_display.disconnect("mouse_entered", self, "_on_BattlerContainer_mouse_entered")
+		character_display.disconnect("mouse_exited", self, "_on_BattlerContainer_mouse_exited")
 
 
 func update_health_ui():
-	var health_label = stat_container.get_node("Health/Label")
+	var health_label = stat_container.get_node("HealthContainer/HealthIcon/HeathLabel")
 	health_label.set_text(str(get_health()))
 
 
@@ -157,7 +157,7 @@ func get_defense() -> int:
 	return self.defense
 
 func update_defense_ui():
-	var defense_label = stat_container.get_node("Defense/Label")
+	var defense_label = stat_container.get_node("DefenseContainer/DefenseIcon/DefenseLabel")
 	defense_label.set_text(str(get_defense()))
 
 func _die() -> void:
@@ -174,14 +174,16 @@ func _on_Selected(action: Action):
 	die_selected = true
 #	action_container sits behind character_display when not active. setting
 #	visibilty is not necessary but just seems right to do it anyways
+	action_container.set_scale(Vector2(0,0))
 	action_container.set_visible(true)
 #	die dissapear after being clicked
 	tween.interpolate_property(die, "scale",
-		die.scale, Vector3(0,0,0), 1,
+		die.scale, Vector3(0,0,0), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 #	slide out 'action' drawer
-	tween.interpolate_property(action_container, "rect_position",
-		null, Vector2(99, action_container.rect_position.y), 1,
+	
+	tween.interpolate_property(action_container, "rect_scale",
+		null, Vector2(1,1), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
 #	sets the current action that you selected
@@ -226,29 +228,13 @@ func set_targetable(value: bool) -> void:
 #	grows and shrinks the character container (the one with the sprite) when
 #	a player is picking a target and the character is targetable
 	targetable = value
-	if targetable:
-		get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").play("targetable")
-	else:
-		if  get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").current_animation:
-			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").seek(0, true)
-			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").stop(true)
-
-
-func _on_CharacterDisplay_gui_input(event: InputEvent) -> void:
-	# this is used during the players turn phase for picking targets
-	# its a bit awkard to account for deselecting unit by clicking outside the parent
-	# so you can pick targets in any order you'd like
-	if event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT and event.is_pressed():
-			if Global.turn_phase == "target":
-				if get_parent().get_parent().current_attacker == self  and (face_choice.name == 'Miss' or target):
-					return
-				if not get_parent().get_parent().current_attacker and (face_choice.name == 'Miss' or target):
-					return
-				if get_parent().get_parent().current_attacker and not get_parent().get_parent().current_attacker.face_choice.name == 'Miss':
-					emit_signal("target_selected", self)
-				elif not get_parent().get_parent().current_attacker and not face_choice.name == 'Miss':
-					get_parent().get_parent().set_current_attacker(self)
+	# TODO: change to that glowing thing I was working on
+#	if targetable:
+#		get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").play("targetable")
+#	else:
+#		if  get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").current_animation:
+#			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").seek(0, true)
+#			 get_node("CharacterDisplay/CharacterContainer/AnimationPlayer").stop(true)
 
 
 func _on_TargetSelected(_who):
@@ -320,58 +306,14 @@ func reset():
 	tween.start()
 
 
-func _on_CharacterDisplay_mouse_entered() -> void:
-#	TODO: check if target phase and only activate during that
-#	and im not sure why im checking for target_selected
-	if target_selected:
-		tween.interpolate_property(character_display, "rect_scale",
-			null, Vector2(1, 1), .3,
-			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	else:
-#		grow a bit to let you know it has an action it wants to spend during 
-#	the target phase
-		tween.interpolate_property(character_display, "rect_scale",
-			null, Vector2(1.1, 1.1), .3,
-			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
-
-
-func _on_CharacterDisplay_mouse_exited() -> void:
-#	same thing as mouse_entered
-	if target_selected:
-		tween.interpolate_property(character_display, "rect_scale",
-			null, Vector2(.9, .9), .3,
-			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	else:
-		tween.interpolate_property(character_display, "rect_scale",
-			null, Vector2(1, 1), .3,
-			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
-
-
 func _on_Tween_tween_completed(object: Object, _key: NodePath) -> void:
 #	this is only here to signal when its okay to set the texture in the action
 #	container. Could be hooked up differently. im tired atm so i dont have a todo.
 	if object is RigidBody:
 		if face_choice: 
-			get_node("CharacterDisplay/TextureRect/ActionChoice").texture = face_choice.texture.duplicate()
+			get_node("BattlerContainer/ActionContainer/ActionChoice").texture = face_choice.texture.duplicate()
 		die.queue_free()
 
-
-func _on_TextureRect_mouse_entered() -> void:
-	# on mouse over of action container, display characters targets
-	if target_selected && face_choice.name != "Miss":
-		target.target_indicator.set_visible(true)
-		target.targeted_grow()
-
-
-func _on_TextureRect_mouse_exited() -> void:
-#	 stop the target recticle
-	if target_selected && face_choice.name != "Miss":
-		target.target_indicator.set_visible(false)
-		target.target_grow_tween.stop_all()
-		target.target_shrink_tween.stop_all()
-		
 
 func action_tween_start() -> void:
 #	sliding forward combat animation
@@ -408,3 +350,66 @@ func _on_TargetGrow_tween_completed(_object: Object, _key: NodePath) -> void:
 
 func _on_TargetShrink_tween_completed(_object: Object, _key: NodePath) -> void:
 	targeted_grow()
+
+
+func _on_BattlerContainer_mouse_entered() -> void:
+	pass # Replace with function body.
+
+
+func _on_BattlerContainer_mouse_exited() -> void:
+	#	same thing as mouse_entered
+	if target_selected:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(.9, .9), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	else:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1, 1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
+
+#	TODO: check if target phase and only activate during that
+#	and im not sure why im checking for target_selected
+	if target_selected:
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1, 1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	else:
+#		grow a bit to let you know it has an action it wants to spend during 
+#	the target phase
+		tween.interpolate_property(character_display, "rect_scale",
+			null, Vector2(1.1, 1.1), .3,
+			Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	tween.start()
+
+
+func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
+		# this is used during the players turn phase for picking targets
+	# its a bit awkard to account for deselecting unit by clicking outside the parent
+	# so you can pick targets in any order you'd like
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.is_pressed():
+			if Global.turn_phase == "target":
+				if get_parent().get_parent().get_parent().current_attacker == self  and (face_choice.name == 'Miss' or target):
+					return
+				if not get_parent().get_parent().get_parent().current_attacker and (face_choice.name == 'Miss' or target):
+					return
+				if get_parent().get_parent().get_parent().current_attacker and not get_parent().get_parent().get_parent().current_attacker.face_choice.name == 'Miss':
+					emit_signal("target_selected", self)
+				elif not get_parent().get_parent().get_parent().current_attacker and not face_choice.name == 'Miss':
+					get_parent().get_parent().get_parent().set_current_attacker(self)
+
+
+func _on_ActionContainer_mouse_entered() -> void:
+	# on mouse over of action container, display characters targets
+	if target_selected && face_choice.name != "Miss":
+		target.target_indicator.set_visible(true)
+		target.targeted_grow()
+
+
+func _on_ActionContainer_mouse_exited() -> void:
+	#	 stop the target recticle
+	if target_selected && face_choice.name != "Miss":
+		target.target_indicator.set_visible(false)
+		target.target_grow_tween.stop_all()
+		target.target_shrink_tween.stop_all()

@@ -88,13 +88,13 @@ enemy_loadout = {
 "7": ExtResource( 9 )
 }
 
-[node name="TurnOwnerLabel" parent="Units" index="2"]
+[node name="TurnOwnerLabel" parent="Units" index="0"]
 margin_left = 303.883
 margin_top = 241.886
 margin_right = 343.883
 margin_bottom = 266.886
 
-[node name="PhaseLabel" parent="Units" index="3"]
+[node name="PhaseLabel" parent="Units" index="1"]
 margin_left = 152.973
 margin_top = 243.01
 margin_right = 192.973

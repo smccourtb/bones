@@ -10,8 +10,8 @@ export var enemy_loadout = {} # the key is a string of the enemies number. Start
 
 onready var turn_label: Label = $TurnOwnerLabel
 onready var phase_label: Label = $PhaseLabel
-onready var player_units_node: VBoxContainer = $PlayerUnits
-onready var enemy_units_node: VBoxContainer = $EnemyUnits
+onready var player_units_node: VBoxContainer = $HBoxContainer/PlayerBattlers
+onready var enemy_units_node: VBoxContainer = $HBoxContainer/EnemyBattlers
 
 
 var unit_refs: Array # Holds reference to all units
@@ -29,12 +29,12 @@ var current_attacker: Control
 # TODO: die colors should be moved into character_unit.gd and the parameter
 #		removed from the initialize functions
 const die_colors = {
-	"1": Color8(160, 178, 200), # blue
-	"2": Color8(156, 195, 150), # green 
-	"3": Color8(177, 155, 190), # purple
-	"4": Color8(204, 144, 141), # red
-	"5": Color8(224, 203, 121), # yellow
-	"Enemy": Color8(207,155,93) # enemy
+	"1": Color8(82, 107, 135), # blue
+	"2": Color8(85, 130, 78), # green 
+	"3": Color8(109, 84, 125), # purple
+	"4": Color8(140, 71, 68), # red
+	"5": Color8(163, 138, 45), # yellow
+	"Enemy": Color8(135,94,46) # enemy
 }
 
 const ui_colors = {
@@ -72,7 +72,7 @@ func _ready() -> void:
 #	setup the EnemyUnits.tscn
 	_setup_enemies()
 #	store a list of all character (unit) nodes
-	unit_refs = players + enemies
+#	unit_refs = players + enemies
 	connect("target_picked", self, "_on_TargetsPicked")
 
 
@@ -98,7 +98,7 @@ func _setup_characters() -> void:
 #	a previous save
 	
 	# Read the player loadout and add children to PlayerUnits
-	var player_resource = preload("res://units/CharacterUnit.tscn")
+	var player_resource = preload("res://units/PlayerBattler.tscn")
 #	add instace and add nodes to the tree, set the name
 	for i in player_count:
 		var player = player_resource.instance()
@@ -122,7 +122,7 @@ func _setup_characters() -> void:
 
 func _setup_enemies() -> void:
 	_set_enemy_count()
-	var Enemy = preload("res://units/enemy/EnemyUnit.tscn")
+	var Enemy = preload("res://units/EnemyBattler.tscn")
 	for i in enemy_loadout.size():
 		var enemy = Enemy.instance()
 		enemy.name = str(6+i) # Change to num of players + 1 instead of 6

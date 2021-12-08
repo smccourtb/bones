@@ -14,20 +14,38 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://actions/action.gd"
 }, {
+"base": "Control",
+"class": "Battler",
+"language": "GDScript",
+"path": "res://units/battler.gd"
+}, {
 "base": "Resource",
 "class": "Character",
 "language": "GDScript",
 "path": "res://character_resources/character.gd"
 }, {
+"base": "Battler",
+"class": "Enemy",
+"language": "GDScript",
+"path": "res://units/enemy_battler.gd"
+}, {
 "base": "Resource",
 "class": "Loadout",
 "language": "GDScript",
 "path": "res://loadouts/party_loadout.gd"
+}, {
+"base": "Battler",
+"class": "Player",
+"language": "GDScript",
+"path": "res://units/player_battler.gd"
 } ]
 _global_script_class_icons={
 "Action": "",
+"Battler": "",
 "Character": "",
-"Loadout": ""
+"Enemy": "",
+"Loadout": "",
+"Player": ""
 }
 
 [application]
