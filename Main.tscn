@@ -87,18 +87,6 @@ enemy_loadout = {
 "7": ExtResource( 9 )
 }
 
-[node name="TurnOwnerLabel" parent="Units" index="0"]
-margin_left = 303.883
-margin_top = 241.886
-margin_right = 343.883
-margin_bottom = 266.886
-
-[node name="PhaseLabel" parent="Units" index="1"]
-margin_left = 152.973
-margin_top = 243.01
-margin_right = 192.973
-margin_bottom = 268.01
-
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.112525, 18.6968, -0.984728 )
 current = true
@@ -185,5 +173,3 @@ __meta__ = {
 }
 
 [connection signal="pressed" from="Reroll" to="." method="_on_Reroll_pressed"]
-
-[editable path="Units"]
