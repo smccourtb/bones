@@ -1,4 +1,5 @@
 extends Resource
 class_name Loadout
 
-export var loadout: = {}
+
+export var loadout: Dictionary = {}
