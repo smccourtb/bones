@@ -82,6 +82,7 @@ window/stretch/aspect="expand"
 [gui]
 
 theme/use_hidpi=true
+theme/custom_font="res://assets/font/font.tres"
 
 [importer_defaults]
 
