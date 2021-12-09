@@ -1,15 +1,8 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/font/m5x7.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://units/units.gd" type="Script" id=3]
 [ext_resource path="res://character_resources/human.tres" type="Resource" id=4]
 [ext_resource path="res://loadouts/player/basic_player.tres" type="Resource" id=5]
-
-[sub_resource type="DynamicFont" id=1]
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=2]
-font_data = ExtResource( 2 )
 
 [node name="Units" type="Control"]
 anchor_right = 1.0
@@ -30,7 +23,6 @@ margin_left = 308.651
 margin_top = 243.475
 margin_right = 348.651
 margin_bottom = 268.475
-custom_fonts/font = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -40,7 +32,6 @@ margin_left = 183.168
 margin_top = 244.599
 margin_right = 223.168
 margin_bottom = 269.599
-custom_fonts/font = SubResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
