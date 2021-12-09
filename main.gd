@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 
 
 signal roll_phase_begin
@@ -14,31 +14,42 @@ var turn_owner: bool = false # if true player turn, false: enemy
 
 
 # node references
-onready var units = $Units
-onready var players = $Units/HBoxContainer/PlayerBattlers
-onready var enemies = $Units/HBoxContainer/EnemyBattlers
-onready var reroll_button = $Reroll
-onready var win_message = $WinMessage
+onready var units = $UI/Units
+onready var players = $UI/Units/HBoxContainer/PlayerBattlers
+onready var enemies = $UI/Units/HBoxContainer/EnemyBattlers
+onready var reroll_button = $UI/Reroll
+onready var win_message = $UI/WinMessage
+
 
 #	although this is the main script right now, much of this will be moved to 
 #	"battle" script in the future
+
+func setup_signals() -> void:
+	# these signals control the flow of the phases of battle
+	connect("roll_phase_begin", self, "_on_rollPhase_begin")
+	connect("roll_phase_end", self, "_on_rollPhase_end")	
+	connect("target_phase_end", self, "_on_targetPhase_end")
+	connect("target_phase_begin", self, "_on_targetPhase_begin")
+	connect("combat_phase_begin", self, "_on_combatPhase_begin")
+	connect("combat_phase_end", self, "_on_combatPhase_end")
+	units.connect("actions_selected", self, "_on_ActionsSelected")
 
 func _ready() -> void:
 	setup_signals()
 	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
 	randomize()
-#	TODO: add an "{ begin / end } { current_phase } Phase" button to call this
-#		  and the other phases. One button for all logic.
+	# TODO: add an "{ begin / end } { current_phase } Phase" button to call this
+	#       and the other phases. One button for all logic.
 	emit_signal("roll_phase_begin")
 
 
 func _physics_process(_delta: float) -> void:
-#	debugging purposes. Updates the phase and whose turn it is
+	# debugging purposes. Updates the phase and whose turn it is
 	units.turn_label.text = "Player Turn" if turn_owner else "Enemy Turn"
-	units.phase_label.text = "Phase: " + Global.turn_phase.capitalize()
+	units.phase_label.text = "Phase: " + Global.get_turn_phase_name()
 	
-#	hides button unless its players roll phase
-	reroll_button.visible = Global.turn_phase == "roll" and turn_owner
+	# hides button unless its players roll phase
+	reroll_button.visible = Global.turn_phase == Global.TurnPhase.ROLL and turn_owner
 
 
 func set_reroll(amount) -> void:
@@ -57,7 +68,7 @@ func get_reroll() -> int:
 
 func _on_rollPhase_begin() -> void:
 	print("ENTERING ROLL PHASE")
-	Global.turn_phase = "roll"
+	Global.turn_phase = Global.TurnPhase.ROLL
 #	begins game as enemy turn
 #	loops through all units for whosever turn it is and rolls their die
 	if turn_owner:
@@ -81,7 +92,7 @@ func _on_rollPhase_end() -> void:
 func _on_targetPhase_begin() -> void:
 	print("ENTERING TARGET PHASE")
 #	updates the debug "phase" label
-	Global.turn_phase = "target"
+	Global.turn_phase = Global.TurnPhase.TARGET
 #	loops through all player units, checks if there are any misses and sets the 
 #	target to null but still triggers the target selected signal so it can increase
 #	the count for the signal actions_selected
@@ -129,7 +140,7 @@ func _on_targetPhase_end() -> void:
 
 func _on_combatPhase_begin() -> void:
 	print("ENTERING COMBAT PHASE")
-	Global.turn_phase = "combat"
+	Global.turn_phase = Global.TurnPhase.COMBAT
 	
 	if turn_owner:
 #		loops through all player units and checks if they have a target, then
@@ -213,17 +224,6 @@ func _on_ActionsSelected() -> void:
 	if not turn_owner: # if enemy turn
 		yield(get_tree().create_timer(1.0), "timeout")
 	emit_signal("roll_phase_end")
-
-
-func setup_signals() -> void:
-#	these signals control the flow of the phases of battle
-	connect("roll_phase_begin", self, "_on_rollPhase_begin")
-	connect("roll_phase_end", self, "_on_rollPhase_end")	
-	connect("target_phase_end", self, "_on_targetPhase_end")
-	connect("target_phase_begin", self, "_on_targetPhase_begin")
-	connect("combat_phase_begin", self, "_on_combatPhase_begin")
-	connect("combat_phase_end", self, "_on_combatPhase_end")
-	units.connect("actions_selected", self, "_on_ActionsSelected")
 
 
 func check_for_win() -> bool:
