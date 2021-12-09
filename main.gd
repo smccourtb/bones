@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 
 
 signal roll_phase_begin
