@@ -19,9 +19,7 @@ var defense: int
 # current actions on the die
 var die_faces := {}
 # the choice that was set by clicking on the die in the roll phase
-var face_choice: Action
-# useless bool i think
-var die_selected: bool = false
+var action_choice: Action
 var target_selected: bool = false
 # node ref to the target of the action
 var target = null
@@ -171,9 +169,6 @@ func _on_Selected(action: Action):
 #	see this should be the action_selected function that sits empty somehwere in here
 #	called as a player only. Enemy units do not use this, they use _on_RollSet()
 #	called when a player clicks on their die on roll phase
-	die_selected = true
-#	action_container sits behind character_display when not active. setting
-#	visibilty is not necessary but just seems right to do it anyways
 	action_container.set_scale(Vector2(0,0))
 	action_container.set_visible(true)
 #	die dissapear after being clicked
@@ -187,7 +182,7 @@ func _on_Selected(action: Action):
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
 #	sets the current action that you selected
-	face_choice = action
+	action_choice = action
 #	triggers _on_TargetsSelected() in units.gd
 	emit_signal("action_selected", true)
 
@@ -211,7 +206,7 @@ func get_possible_targets():
 	# this is barebones right now but only sets an animation the scaling character
 	# container.
 	var targets
-	if face_choice.hostile:
+	if action_choice.hostile:
 		targets = get_tree().get_nodes_in_group("enemy")
 	else:
 		targets = get_tree().get_nodes_in_group("player")
@@ -269,24 +264,23 @@ func set_selected(new_value: bool):
 func action():
 #	this function will get bigger and more detailed in the future. the perform
 #	action logic. the mothods it calls are the recieving action logic
-	if face_choice.sound:
-		SFX.play(face_choice.sound) # Play action sound when triggered
-	if face_choice.hostile:
+	if action_choice.sound:
+		SFX.play(action_choice.sound) # Play action sound when triggered
+	if action_choice.hostile:
 		sprite.play("Attack")
 		yield(sprite, "animation_finished")
 		sprite.play("Idle")
-		target.take_damage(face_choice.base_amount)
-	elif face_choice.heal:
-		target.set_health(face_choice.base_amount)
-	elif face_choice.block:
-		target.set_defense(face_choice.base_amount)
+		target.take_damage(action_choice.base_amount)
+	elif action_choice.heal:
+		target.set_health(action_choice.base_amount)
+	elif action_choice.block:
+		target.set_defense(action_choice.base_amount)
 
 
 func reset():
 #	called during the combatPhase_end()
-	die_selected = false
 	target = null
-	face_choice = null
+	action_choice = null
 #	THAT BUG COULD BE IN HERE TOO IDK this lsides the character back 10 px
 #	and the container is off by 10px
 	set_target_selected(false)
@@ -310,8 +304,8 @@ func _on_Tween_tween_completed(object: Object, _key: NodePath) -> void:
 #	this is only here to signal when its okay to set the texture in the action
 #	container. Could be hooked up differently. im tired atm so i dont have a todo.
 	if object is RigidBody:
-		if face_choice: 
-			get_node("BattlerContainer/ActionContainer/ActionChoice").texture = face_choice.texture.duplicate()
+		if action_choice: 
+			get_node("BattlerContainer/ActionContainer/ActionChoice").texture = action_choice.texture.duplicate()
 		die.queue_free()
 
 
@@ -390,26 +384,26 @@ func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.is_pressed():
 			if Global.turn_phase == "target":
-				if get_parent().get_parent().get_parent().current_attacker == self  and (face_choice.name == 'Miss' or target):
+				if get_parent().get_parent().get_parent().current_attacker == self  and (action_choice.name == 'Miss' or target):
 					return
-				if not get_parent().get_parent().get_parent().current_attacker and (face_choice.name == 'Miss' or target):
+				if not get_parent().get_parent().get_parent().current_attacker and (action_choice.name == 'Miss' or target):
 					return
-				if get_parent().get_parent().get_parent().current_attacker and not get_parent().get_parent().get_parent().current_attacker.face_choice.name == 'Miss':
+				if get_parent().get_parent().get_parent().current_attacker and not get_parent().get_parent().get_parent().current_attacker.action_choice.name == 'Miss':
 					emit_signal("target_selected", self)
-				elif not get_parent().get_parent().get_parent().current_attacker and not face_choice.name == 'Miss':
+				elif not get_parent().get_parent().get_parent().current_attacker and not action_choice.name == 'Miss':
 					get_parent().get_parent().get_parent().set_current_attacker(self)
 
 
 func _on_ActionContainer_mouse_entered() -> void:
 	# on mouse over of action container, display characters targets
-	if target_selected && face_choice.name != "Miss":
+	if target_selected && action_choice.name != "Miss":
 		target.target_indicator.set_visible(true)
 		target.targeted_grow()
 
 
 func _on_ActionContainer_mouse_exited() -> void:
 	#	 stop the target recticle
-	if target_selected && face_choice.name != "Miss":
+	if target_selected && action_choice.name != "Miss":
 		target.target_indicator.set_visible(false)
 		target.target_grow_tween.stop_all()
 		target.target_shrink_tween.stop_all()

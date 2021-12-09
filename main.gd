@@ -74,13 +74,6 @@ func _on_rollPhase_begin() -> void:
 
 func _on_rollPhase_end() -> void:
 	print("EXITING ROLL PHASE")
-#	this was used to auto select an un selected die when the player ran out
-#	of rerolls. Doesn't get called anymore. Haven't really looked into it and
-#	may deprecate it.
-	if turn_owner:
-		for player in players.get_children():
-			if not player.die_selected:
-				player._on_Selected(player.get_child(2).actions[player.get_child(2).roll])
 #	officially ends the roll phase and beings the target phase
 	emit_signal("target_phase_begin")
 
@@ -94,7 +87,7 @@ func _on_targetPhase_begin() -> void:
 #	the count for the signal actions_selected
 	if turn_owner:
 		for player in players.get_children():
-			if player.face_choice.name == "Miss":
+			if player.action_choice.name == "Miss":
 				player.emit_signal("target_selected", null)
 				# activates the targeted tween and sets target_selected variable
 				player.set_target_selected(true)
@@ -114,7 +107,7 @@ func _on_targetPhase_begin() -> void:
 #			function choose_target() AND set_enemy_target(). It doesn't matter
 #			because it loops through all chooses a target if it can and then
 #			moves on regardless. With the player you need to wait for input.
-			if not enemy.face_choice.name == "Miss":
+			if not enemy.action_choice.name == "Miss":
 				enemy.choose_target()
 #		triggers the end of target phase
 		emit_signal("target_phase_end")

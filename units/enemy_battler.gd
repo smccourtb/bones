@@ -8,7 +8,7 @@ func choose_target():
 	var target_choice: int
 #	true is player only changes if action is a hostile action
 	var target_party: bool = false
-	if face_choice.hostile:
+	if action_choice.hostile:
 #		true = player
 		target_party = true
 #		get the amount of players
@@ -17,7 +17,7 @@ func choose_target():
 #		if not hostile, get the amount of enemy nodes. Could be called differently
 		target_range = get_parent().get_children().size()
 #	TODO : add logic for multiple targets. target_choice should probably be a list.
-	if face_choice.targets > 0:
+	if action_choice.targets > 0:
 #		pick a random target based of amount of target nodes
 #		this number will be used to match to the name of the target node. THIS
 #		is what i was talking about
@@ -68,12 +68,6 @@ func roll_die():
 
 
 func _on_RollSet(action: Action):
-#	sets die_selected to true for.... some.. reason
-#	AH OKAY i looked back and checked. As far as i csan tell this is only used 
-#	in main.gd where it checks if the player has all its dice selected. It
-#	doesn't work. So im going to comment it out but leave it for now.
-#	die_selected = true
-
 #	This makes the die shrink into nothingness on selection. same thing as
 #	_on_Selected under character_die.gd
 	tween.interpolate_property(die, "scale",
@@ -88,8 +82,8 @@ func _on_RollSet(action: Action):
 		null, Vector2(1,1), .3,
 		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	tween.start()
-#	sets the action. face_choice is a stupid variable name and will be replaced soon
-	face_choice = action
+#	sets the action. action_choice is a stupid variable name and will be replaced soon
+	action_choice = action
 #	trigger the signal so actionsSelected add it to the count so it can trigger
 #	the signal actions_selected for main.gd. Yes the signal names are too similar
 #	and cause me confusion maybe the other one should be called all_actions_selected.
@@ -100,9 +94,8 @@ func _on_RollSet(action: Action):
 
 func reset():
 #	resets all variables to what they started with
-	die_selected = false
 	target = null
-	face_choice = null
+	action_choice = null
 	target_selected = false
 	
 	# removes texture from action choice
