@@ -14,14 +14,25 @@ var turn_owner: bool = false # if true player turn, false: enemy
 
 
 # node references
-onready var units = $Units
-onready var players = $Units/HBoxContainer/PlayerBattlers
-onready var enemies = $Units/HBoxContainer/EnemyBattlers
-onready var reroll_button = $Reroll
-onready var win_message = $WinMessage
+onready var units = $UI/Units
+onready var players = $UI/Units/HBoxContainer/PlayerBattlers
+onready var enemies = $UI/Units/HBoxContainer/EnemyBattlers
+onready var reroll_button = $UI/Reroll
+onready var win_message = $UI/WinMessage
+
 
 #	although this is the main script right now, much of this will be moved to 
 #	"battle" script in the future
+
+func setup_signals() -> void:
+	# these signals control the flow of the phases of battle
+	connect("roll_phase_begin", self, "_on_rollPhase_begin")
+	connect("roll_phase_end", self, "_on_rollPhase_end")	
+	connect("target_phase_end", self, "_on_targetPhase_end")
+	connect("target_phase_begin", self, "_on_targetPhase_begin")
+	connect("combat_phase_begin", self, "_on_combatPhase_begin")
+	connect("combat_phase_end", self, "_on_combatPhase_end")
+	units.connect("actions_selected", self, "_on_ActionsSelected")
 
 func _ready() -> void:
 	setup_signals()
@@ -213,17 +224,6 @@ func _on_ActionsSelected() -> void:
 	if not turn_owner: # if enemy turn
 		yield(get_tree().create_timer(1.0), "timeout")
 	emit_signal("roll_phase_end")
-
-
-func setup_signals() -> void:
-#	these signals control the flow of the phases of battle
-	connect("roll_phase_begin", self, "_on_rollPhase_begin")
-	connect("roll_phase_end", self, "_on_rollPhase_end")	
-	connect("target_phase_end", self, "_on_targetPhase_end")
-	connect("target_phase_begin", self, "_on_targetPhase_begin")
-	connect("combat_phase_begin", self, "_on_combatPhase_begin")
-	connect("combat_phase_end", self, "_on_combatPhase_end")
-	units.connect("actions_selected", self, "_on_ActionsSelected")
 
 
 func check_for_win() -> bool:
