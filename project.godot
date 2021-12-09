@@ -58,6 +58,7 @@ config/icon="res://icon.png"
 
 Global="*res://global/global.gd"
 SFX="*res://autoload/sfx.gd"
+Debug="*res://debug/Debug.tscn"
 
 [debug]
 
