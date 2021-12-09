@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://assets/ui/health_icon.png" type="Texture" id=1]
 [ext_resource path="res://assets/font/m5x7.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=3]
 [ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/defense_icon.png" type="Texture" id=5]
+[ext_resource path="res://assets/characters/human/human_base-idle.png" type="Texture" id=6]
 [ext_resource path="res://assets/ui/action_choice_background.png" type="Texture" id=7]
 [ext_resource path="res://units/battler.gd" type="Script" id=8]
 
@@ -20,7 +21,51 @@ outline_size = 1
 outline_color = Color( 0, 0, 0, 0.784314 )
 font_data = ExtResource( 2 )
 
+[sub_resource type="Animation" id=4]
+resource_name = "grow_battler"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1.2, 1.2 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "show_action_container"
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/ActionContainer:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1e-05, 1e-05 ), Vector2( 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BattlerContainer/ActionContainer:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
 [node name="Battler" type="Control"]
+rect_pivot_offset = Vector2( 24, 24 )
 mouse_filter = 2
 size_flags_horizontal = 3
 script = ExtResource( 8 )
@@ -44,7 +89,10 @@ __meta__ = {
 
 [node name="Human" parent="BattlerContainer" instance=ExtResource( 4 )]
 position = Vector2( 8, 8 )
+texture = ExtResource( 6 )
 centered = false
+hframes = 16
+vframes = 4
 
 [node name="StatContainer" type="HBoxContainer" parent="BattlerContainer"]
 anchor_top = 1.0
@@ -112,7 +160,6 @@ __meta__ = {
 }
 
 [node name="ActionContainer" type="NinePatchRect" parent="BattlerContainer"]
-visible = false
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -122,6 +169,7 @@ margin_top = -9.0
 margin_right = 15.0
 margin_bottom = 9.0
 rect_min_size = Vector2( 18, 18 )
+rect_scale = Vector2( 1e-05, 1e-05 )
 rect_pivot_offset = Vector2( 9, 9 )
 mouse_filter = 0
 texture = ExtResource( 7 )
@@ -153,13 +201,10 @@ mouse_filter = 2
 
 [node name="Action" type="Tween" parent="."]
 
-[node name="TargetGrow" type="Tween" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/grow_battler = SubResource( 4 )
+anims/show_action_container = SubResource( 3 )
 
-[node name="TargetShrink" type="Tween" parent="."]
-
-[connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
-[connection signal="mouse_entered" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_entered"]
-[connection signal="mouse_exited" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_exited"]
-[connection signal="mouse_entered" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_entered"]
-[connection signal="mouse_exited" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_exited"]
 [connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]
+
+[editable path="BattlerContainer/Human"]

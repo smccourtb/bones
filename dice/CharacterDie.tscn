@@ -60,4 +60,8 @@ enabled = true
 cast_to = Vector3( 0, 1, 0 )
 collide_with_areas = true
 
-[node name="Tween" type="Tween" parent="."]
+[node name="Disappear" type="Tween" parent="."]
+
+[node name="Grow" type="Tween" parent="."]
+
+[connection signal="tween_completed" from="Disappear" to="." method="_on_Disappear_tween_completed"]

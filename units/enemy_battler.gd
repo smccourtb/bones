@@ -1,6 +1,7 @@
 extends Battler
 class_name Enemy
 
+
 func choose_target():
 #	total amount of possible targets
 	var target_range: int
@@ -46,19 +47,13 @@ func set_enemy_target(choice: String, side: bool):
 
 
 func roll_die():
-#	if theres still a die kicking around for whatever reason, use that.
-	if is_instance_valid(die):
-		add_child(die)
-	else:
-#		if not, spin up a new instance
-		die = preload("res://dice/CharacterDie.tscn").instance()
-		add_child(die)
+	die = preload("res://dice/CharacterDie.tscn").instance()
+	add_child(die)
 #	this is where i fixed the bug. gets triggered when the die emits the signal stopped.
 #	i moved the roll determination to physics process and stop the physics process
 #	after the stopped signal is called. The die gets freed when selected and 
 #	when it gets rolled again the physics_process gets set to true on ready()
 	die.connect("roll_set", self, "_on_RollSet")
-	
 #	(re)builds the die. Could be built once the first time and stored in a reference
 #	instead of rebuilding every round but due to reasons above, probably be to
 #	leave it. Although we could remove_child() instead of queue_free(). Idk.
@@ -68,55 +63,28 @@ func roll_die():
 
 
 func _on_RollSet(action: Action):
-#	This makes the die shrink into nothingness on selection. same thing as
-#	_on_Selected under character_die.gd
-	tween.interpolate_property(die, "scale",
-		die.scale, Vector3(0,0,0), .3,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-#	this slides that box out from behind the CharacterUnit control node
-#	TODO: move to own function with a parameter for the first position in the 
-#	vector2 (-19). That way it can be used on either side. 
-	action_container.set_scale(Vector2(0,0))
-	action_container.set_visible(true)
-	tween.interpolate_property(action_container, "rect_scale",
-		null, Vector2(1,1), .3,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
-#	sets the action. action_choice is a stupid variable name and will be replaced soon
+#	see this should be the action_selected function that sits empty somehwere in here
+#	called as a player only. Enemy units do not use this, they use _on_RollSet()
+#	called when a player clicks on their die on roll phase
+	die.disappear()
+	action_choice_texture.set_texture(action.texture)
+	ui_animation_player.play("show_action_container")
+#	sets the current action that you selected
 	action_choice = action
-#	trigger the signal so actionsSelected add it to the count so it can trigger
-#	the signal actions_selected for main.gd. Yes the signal names are too similar
-#	and cause me confusion maybe the other one should be called all_actions_selected.
-#	I usually run a signal bus and i may just do that here. this is a way more
-#	signal based game than i've done before
+#	triggers _on_TargetsSelected() in units.gd
 	emit_signal("action_selected", false)
-
-
-func reset():
-#	resets all variables to what they started with
-	target = null
-	action_choice = null
-	target_selected = false
-	
-	# removes texture from action choice
-	get_node("CharacterDisplay/TextureRect/ActionChoice").set_texture(null)
-	# sets action container behind character display
-	tween.interpolate_property(action_container, "rect_position",
-		null, Vector2(4, action_container.rect_position.y), .3,
-		Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
-	tween.start()
 
 
 func action_tween_start():
 #	the combat tween the slides the whole characterunit control node forward
-	action_tween.interpolate_property(character_display, 'rect_position', null,
-	Vector2(character_display.rect_position.x - 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.interpolate_property(battler_container, 'rect_position', null,
+	Vector2(battler_container.rect_position.x - 30, battler_container.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	action_tween.start()
 
 
 func action_tween_end():
 #	the combat tween the slides the whole characterunit control node backward
-	action_tween.interpolate_property(character_display, 'rect_position', null,
-	Vector2(character_display.rect_position.x + 30, character_display.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	action_tween.interpolate_property(battler_container, 'rect_position', null,
+	Vector2(battler_container.rect_position.x + 30, battler_container.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	action_tween.start()
 

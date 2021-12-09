@@ -137,7 +137,6 @@ func _setup_enemies() -> void:
 			continue
 		j.initialize(data.duplicate(), die_colors["Enemy"], ui_colors["Enemy"])
 		j.connect("action_selected", self, "_on_ActionSelected")
-		j.connect("target_selected", self, "_on_TargetSelected")
 #	set the enemies array. not sure if needed but nice to grab while im here
 	enemies = enemy_units
 
@@ -172,7 +171,7 @@ func _on_TargetSelected(who) -> void:
 #		provided paramater
 		current_attacker.set_target(who)
 #		returns the character display ui back with the others
-		current_attacker.set_selected(false)
+		current_attacker.set_current_attacker(false)
 #		this is necessary for the _on_CharacterDisplay_gui_input() in character_unit.gd
 		set_current_attacker(null)
 #	sets any units that were targetable to false and stops the corresponding animation
@@ -188,10 +187,10 @@ func set_current_attacker(to) -> void:
 	if Global.turn_phase == "target":
 #		swap attackers if any
 		if current_attacker:
-			current_attacker.set_selected(false)
+			current_attacker.set_current_attacker(false)
 		current_attacker = to
 		if !current_attacker:
 			for i in unit_refs:
 				i.set_targetable(false)
 		if current_attacker:
-			current_attacker.set_selected(true)
+			current_attacker.set_current_attacker(true)

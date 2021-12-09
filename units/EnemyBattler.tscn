@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://units/enemy_battler.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=2]
@@ -10,11 +10,15 @@ flags = 16
 atlas = ExtResource( 2 )
 region = Rect2( 472, 264, 64, 64 )
 
+[sub_resource type="Animation" id=2]
+resource_name = "fsfs"
+
 [node name="EnemyBattler" groups=[
 "enemy",
 ] instance=ExtResource( 3 )]
 anchor_left = 1.0
 anchor_right = 1.0
+rect_pivot_offset = Vector2( -24, 24 )
 script = ExtResource( 1 )
 
 [node name="BattlerContainer" parent="." index="0"]
@@ -22,8 +26,16 @@ margin_left = -48.0
 margin_right = 0.0
 texture = SubResource( 1 )
 
+[node name="Human" parent="BattlerContainer" index="0"]
+flip_h = true
+
 [node name="ActionContainer" parent="BattlerContainer" index="2"]
 anchor_left = 0.0
 anchor_right = 0.0
 margin_left = -14.0
 margin_right = 4.0
+
+[node name="AnimationPlayer" parent="." index="3"]
+anims/fsfs = SubResource( 2 )
+
+[editable path="BattlerContainer/Human"]

@@ -6,7 +6,9 @@ signal die_selected(action)
 signal roll_set(action) # enemy_unit.gd listens for this signal
 
 onready var mesh = $Cube
-onready var tween = $Tween
+onready var disappear_tween = $Disappear
+onready var grow_tween = $Grow
+
 
 # raycast nodes
 onready var one = $"1"
@@ -19,7 +21,6 @@ onready var six = $"6"
 
 var roll: int  # the side the die landed on
 var actions: Dictionary # die actions: 6 in total. keys correspond to face number
-
 
 func _ready() -> void:
 	set_physics_process(true)
@@ -34,17 +35,17 @@ func _physics_process(_delta: float) -> void:
 			disconnect("input_event", self, "_on_CharacterDie_input_event")
 			disconnect("mouse_entered", self, "_on_CharacterDie_mouse_entered")
 			disconnect("mouse_exited", self, "_on_CharacterDie_mouse_exited")
-	if $'6'.is_colliding():
+	if six.is_colliding():
 		roll = 2
-	elif $'5'.is_colliding():
+	elif five.is_colliding():
 		roll = 1
-	elif $'1'.is_colliding():
+	elif one.is_colliding():
 		roll = 6
-	elif $'3'.is_colliding():
+	elif three.is_colliding():
 		roll = 4
-	elif $'4'.is_colliding():
+	elif four.is_colliding():
 		roll = 5
-	elif $'2'.is_colliding():
+	elif two.is_colliding():
 		roll = 3
 
 func _on_Stopped():
@@ -80,10 +81,21 @@ func reset():
 
 
 func _on_CharacterDie_mouse_entered() -> void:
-	tween.interpolate_property(self, "scale", null, Vector3(1.3, 1.3, 1.3), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
+	grow_tween.interpolate_property(self, "scale", null, Vector3(1.3, 1.3, 1.3), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	grow_tween.start()
 
 
 func _on_CharacterDie_mouse_exited() -> void:
-	tween.interpolate_property(self, "scale", null, Vector3(1, 1, 1), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
+	grow_tween.interpolate_property(self, "scale", null, Vector3(1, 1, 1), .1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	grow_tween.start()
+
+func disappear():
+	#	die dissapear after being clicked
+	disappear_tween.interpolate_property(self, "scale",
+		null, Vector3(0,0,0), .3,
+		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	disappear_tween.start()
+
+
+func _on_Disappear_tween_completed(object: Object, key: NodePath) -> void:
+	queue_free()
