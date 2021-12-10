@@ -37,3 +37,8 @@ func _ready():
 func _process(_delta):
 	for i in range(labels.size()):
 		labels[i].refresh()
+
+func _input(event: InputEvent) -> void:
+#	press f1 to show/hide deubg screen
+	if event.is_action_released("debug"):
+		set_visible(!visible)
