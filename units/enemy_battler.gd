@@ -88,3 +88,5 @@ func action_tween_end():
 	Vector2(battler_container.rect_position.x + 30, battler_container.rect_position.y), .3,Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	action_tween.start()
 
+
+

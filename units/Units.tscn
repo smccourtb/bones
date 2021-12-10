@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://units/units.gd" type="Script" id=3]
 [ext_resource path="res://character_resources/human.tres" type="Resource" id=4]
@@ -64,7 +64,6 @@ margin_left = 464.0
 margin_right = 480.0
 margin_bottom = 270.0
 grow_horizontal = 0
-grow_vertical = 0
 rect_min_size = Vector2( 0, 206 )
 size_flags_horizontal = 3
 size_flags_vertical = 3

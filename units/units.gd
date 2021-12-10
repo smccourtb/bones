@@ -136,6 +136,8 @@ func _setup_enemies() -> void:
 			continue
 		enemy.initialize(data.duplicate(), die_colors["Enemy"], ui_colors["Enemy"])
 		enemy.connect("action_selected", self, "_on_ActionSelected")
+		enemy.connect("target_selected", self, "_on_TargetSelected")
+		
 	# set the enemies array. not sure if needed but nice to grab while im here
 	enemies = enemy_units
 

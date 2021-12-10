@@ -2,10 +2,7 @@ extends Battler
 class_name Player
 
 
-# connected to: units.gd - during _setup_player and _setup_enemy
-# triggered when A) a player character is a current_attacker(units.gd) and player
-#					clicks on a valid target
-signal target_selected # only pertains to players
+
 
 
 func roll_die():
@@ -55,18 +52,4 @@ func _on_BattlerContainer_mouse_exited() -> void:
 		ui_animation_player.play_backwards("grow_battler")
 
 
-func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
-	# this is used during the players turn phase for picking targets
-	# its a bit awkard to account for deselecting unit by clicking outside the parent
-	# so you can pick targets in any order you'd like
-	if event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT and event.is_pressed():
-			if Global.turn_phase == Global.TurnPhase.TARGET:
-				if get_parent().get_parent().get_parent().current_attacker == self  and (action_choice.name == 'Miss' or target):
-					return
-				if not get_parent().get_parent().get_parent().current_attacker and (action_choice.name == 'Miss' or target):
-					return
-				if get_parent().get_parent().get_parent().current_attacker and not get_parent().get_parent().get_parent().current_attacker.action_choice.name == 'Miss':
-					emit_signal("target_selected", self)
-				elif not get_parent().get_parent().get_parent().current_attacker and not action_choice.name == 'Miss':
-					get_parent().get_parent().get_parent().set_current_attacker(self)
+

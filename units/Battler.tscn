@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://assets/ui/health_icon.png" type="Texture" id=1]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=3]
@@ -14,7 +14,7 @@ flags = 16
 atlas = ExtResource( 3 )
 region = Rect2( 472, 264, 64, 64 )
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=2]
 resource_name = "grow_battler"
 length = 0.1
 tracks/0/type = "value"
@@ -193,9 +193,9 @@ mouse_filter = 2
 [node name="Action" type="Tween" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/grow_battler = SubResource( 4 )
+anims/grow_battler = SubResource( 2 )
 anims/show_action_container = SubResource( 3 )
 
-[connection signal="tween_completed" from="Tween" to="." method="_on_Tween_tween_completed"]
+[connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
 
 [editable path="BattlerContainer/Human"]

@@ -9,6 +9,10 @@ class_name Battler
 #					characters action choice is a "Miss"
 # 				 B) when _on_RollSet() is triggered in enemy_units.gd
 signal action_selected(who) # player = true | enemy = false
+# connected to: units.gd - during _setup_player and _setup_enemy
+# triggered when A) a player character is a current_attacker(units.gd) and player
+#					clicks on a valid target
+signal target_selected # only pertains to players
 
 # stats that are set by die_data in initialize()
 var health: int setget set_health, get_health
@@ -89,10 +93,10 @@ func update_health_ui():
 
 
 func set_defense(defense_mod: int) -> void:
-	var new_defense = defense + defense_mod
+	var new_defense: int = defense + defense_mod
 	if new_defense < 0:
 		new_defense = 0
-	defense = new_defense
+	self.defense = new_defense
 	update_defense_ui()
 
 
@@ -221,3 +225,21 @@ func _on_ActionContainer_mouse_entered() -> void:
 func _on_ActionContainer_mouse_exited() -> void:
 	# stop the target recticle
 	pass
+
+
+func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
+	var attacker: Control = get_parent().get_parent().get_parent().current_attacker
+	# this is used during the players turn phase for picking targets
+	# its a bit awkard to account for deselecting unit by clicking outside the parent
+	# so you can pick targets in any order you'd like
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_LEFT and event.is_pressed():
+			if Global.turn_phase == Global.TurnPhase.TARGET:
+				if attacker == self  and (action_choice.name == 'Miss' or target):
+					return
+				if not attacker and (action_choice.name == 'Miss' or target):
+					return
+				if attacker and not attacker.action_choice.name == 'Miss':
+					emit_signal("target_selected", self)
+				elif not attacker and not action_choice.name == 'Miss':
+					get_parent().get_parent().get_parent().set_current_attacker(self)
