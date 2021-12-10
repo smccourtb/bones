@@ -46,7 +46,7 @@ func get_possible_targets():
 
 func _on_BattlerContainer_mouse_entered() -> void:
 	SFX.play(preload("res://assets/sounds/ui/button_hover.wav"))
-	if not Global.turn_phase == "combat":
+	if not Global.turn_phase == Global.TurnPhase.COMBAT:
 		ui_animation_player.play("grow_battler")
 
 
