@@ -1,12 +1,9 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://assets/tilesets/forgotten-plains.png" type="Texture" id=2]
 [ext_resource path="res://units/Units.tscn" type="PackedScene" id=3]
 [ext_resource path="res://character_resources/human.tres" type="Resource" id=9]
-
-[sub_resource type="DynamicFont" id=1]
-font_data = ExtResource( 10 )
 
 [sub_resource type="SpatialMaterial" id=2]
 albedo_color = Color( 0.705882, 0.109804, 0.109804, 1 )
@@ -116,7 +113,6 @@ margin_top = -23.6757
 margin_right = 32.8568
 margin_bottom = 1.32428
 rect_scale = Vector2( 0.75, 0.75 )
-custom_fonts/font = SubResource( 1 )
 text = "Reroll"
 __meta__ = {
 "_edit_use_anchors_": false
