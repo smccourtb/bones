@@ -162,14 +162,14 @@ func set_targetable(value: bool) -> void:
 #	a player is picking a target and the character is targetable
 	targetable = value
 	if value:
-		print("YO")
 		ui_animation_player.play("targeted_show")
 		yield(ui_animation_player, "animation_finished")
 		ui_animation_player.play("targeted")
 	else:
-		print("SHOULLD BE HIDING")
 		ui_animation_player.stop()
-		ui_animation_player.play("targeted_hide")
+		ui_animation_player.play_backwards("targeted_show")
+		yield(ui_animation_player, "animation_finished")
+		
 
 
 func set_current_attacker(new_value: bool):
@@ -179,8 +179,8 @@ func set_current_attacker(new_value: bool):
 		battler_container.set_texture(load("res://assets/ui/active_" + ui_color + ".png"))
 		get_possible_targets()
 	else:
-		ui_animation_player.seek(0, true)
-		ui_animation_player.stop()
+#		ui_animation_player.seek(0, true)
+#		ui_animation_player.stop()
 		battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))
 		
 
@@ -245,9 +245,8 @@ func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
 				if attacker == self  and (action_choice.name == 'Miss' or target):
 					return
 				if not attacker and (action_choice.name == 'Miss' or target):
-					print(battler_container.is_connected("mouse_entered",self, "_on_BattlerContainer_mouse_entered"))
+					return
 				if attacker and not attacker.action_choice.name == 'Miss':
-					print("TARGET SELECTED")
 					emit_signal("target_selected", self)
 				elif not attacker and not action_choice.name == 'Miss':
 					ui_animation_player.play("clicked")
@@ -256,12 +255,8 @@ func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
 
 func _on_BattlerContainer_mouse_entered() -> void:
 	SFX.play(preload("res://assets/sounds/ui/button_hover.wav"))
-#	if not Global.turn_phase == Global.TurnPhase.COMBAT:
-#		ui_animation_player.play("grow_battler")
 	battler_container.set_texture(load("res://assets/ui/active_" + ui_color + ".png"))
 
 func _on_BattlerContainer_mouse_exited() -> void:
 	if get_parent().get_parent().get_parent().current_attacker != self:
-#	if not Global.turn_phase == Global.TurnPhase.COMBAT:
-#		ui_animation_player.play_backwards("grow_battler")
 		battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))

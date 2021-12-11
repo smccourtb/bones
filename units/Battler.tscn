@@ -9,12 +9,12 @@
 [ext_resource path="res://assets/ui/action_choice_background.png" type="Texture" id=7]
 [ext_resource path="res://units/battler.gd" type="Script" id=8]
 
-[sub_resource type="AtlasTexture" id=2]
+[sub_resource type="AtlasTexture" id=1]
 flags = 16
 atlas = ExtResource( 2 )
 region = Rect2( 120, 8, 8, 8 )
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 resource_name = "clicked"
 length = 0.05
 step = 0.025
@@ -31,7 +31,7 @@ tracks/0/keys = {
 "values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=3]
 resource_name = "current_attacker"
 length = 0.8
 loop = true
@@ -48,7 +48,7 @@ tracks/0/keys = {
 "values": [ Vector2( 45, 15 ), Vector2( 49, 15 ), Vector2( 45, 15 ), Vector2( 43, 15 ) ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=4]
 resource_name = "defense_changed"
 tracks/0/type = "value"
 tracks/0/path = NodePath("BattlerContainer/StatContainer/DefenseContainer:rect_scale")
@@ -75,7 +75,7 @@ tracks/1/keys = {
 "values": [ 0.0, 7.5, -7.5, 0.0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=5]
 length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:rect_scale")
@@ -90,7 +90,7 @@ tracks/0/keys = {
 "values": [ Vector2( 1, 1 ), Vector2( 1.2, 1.2 ) ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=6]
 tracks/0/type = "value"
 tracks/0/path = NodePath("BattlerContainer/StatContainer/HealthContainer:rect_scale")
 tracks/0/interp = 1
@@ -116,7 +116,8 @@ tracks/1/keys = {
 "values": [ 0.0, 7.5, -7.5, 0.0 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=7]
+length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("BattlerContainer/ActionContainer:rect_scale")
 tracks/0/interp = 1
@@ -142,7 +143,7 @@ tracks/1/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=8]
 resource_name = "targeted"
 loop = true
 tracks/0/type = "value"
@@ -158,7 +159,7 @@ tracks/0/keys = {
 "values": [ Vector2( 40, 20 ), Vector2( 42, 20 ), Vector2( 37, 20 ), Vector2( 35, 20 ), Vector2( 37, 20 ) ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
+tracks/1/path = NodePath("BattlerContainer/Targeted:rect_scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -166,11 +167,11 @@ tracks/1/enabled = true
 tracks/1/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ true ]
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=9]
 resource_name = "targeted_hide"
 length = 0.1
 tracks/0/type = "value"
@@ -185,20 +186,8 @@ tracks/0/keys = {
 "update": 0,
 "values": [ Vector2( 1, 1 ), Vector2( 1e-05, 1e-05 ) ]
 }
-tracks/1/type = "value"
-tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0.1 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ false ]
-}
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=10]
 resource_name = "targeted_show"
 length = 0.1
 tracks/0/type = "value"
@@ -212,18 +201,6 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 1e-05, 1e-05 ), Vector2( 1, 1 ) ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ true ]
 }
 
 [node name="Battler" type="Control"]
@@ -263,6 +240,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -15.0
 margin_bottom = -3.0
+mouse_filter = 2
 size_flags_horizontal = 3
 custom_constants/separation = 0
 __meta__ = {
@@ -357,7 +335,6 @@ margin_bottom = 8.0
 mouse_filter = 2
 
 [node name="Targeted" type="TextureRect" parent="BattlerContainer"]
-visible = false
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -365,9 +342,10 @@ anchor_bottom = 0.5
 margin_left = -8.0
 margin_top = -4.0
 margin_bottom = 4.0
+rect_scale = Vector2( 1e-05, 1e-05 )
 rect_pivot_offset = Vector2( 4, 4 )
 mouse_filter = 2
-texture = SubResource( 2 )
+texture = SubResource( 1 )
 flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -378,15 +356,15 @@ __meta__ = {
 [node name="Action" type="Tween" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/clicked = SubResource( 3 )
-anims/current_attacker = SubResource( 4 )
-anims/defense_changed = SubResource( 5 )
-anims/grow_battler = SubResource( 6 )
-anims/health_changed = SubResource( 7 )
-anims/show_action_container = SubResource( 8 )
-anims/targeted = SubResource( 9 )
-anims/targeted_hide = SubResource( 10 )
-anims/targeted_show = SubResource( 11 )
+anims/clicked = SubResource( 2 )
+anims/current_attacker = SubResource( 3 )
+anims/defense_changed = SubResource( 4 )
+anims/grow_battler = SubResource( 5 )
+anims/health_changed = SubResource( 6 )
+anims/show_action_container = SubResource( 7 )
+anims/targeted = SubResource( 8 )
+anims/targeted_hide = SubResource( 9 )
+anims/targeted_show = SubResource( 10 )
 
 [connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
 [connection signal="mouse_entered" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_entered"]

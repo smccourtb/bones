@@ -74,7 +74,8 @@ func _gui_input(event) -> void:
 	# get a clearer picture. It works right now
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT and event.is_pressed():
-			set_current_attacker(null)
+			if current_attacker:
+				set_current_attacker(null)
 
 
 func _set_player_count() -> void:
@@ -177,9 +178,7 @@ func _on_TargetSelected(who) -> void:
 		# this is necessary for the _on_CharacterDisplay_gui_input() in character_unit.gd
 		set_current_attacker(null)
 	# sets any units that were targetable to false and stops the corresponding animation
-	print("?????????")
 	for unit in unit_refs:
-		print("WHATY THE FUCK SHOULD BE DISAAPEARING RIGHTN OW")
 		unit.set_targetable(false)
 	# triggers _on_TargetsPicked() that keeps track of when to call targets_selected
 	# signal to change the phase to combat

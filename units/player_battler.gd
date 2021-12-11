@@ -23,6 +23,7 @@ func _on_Selected(action: Action):
 	die.disappear()
 	action_choice_texture.set_texture(action.texture)
 	ui_animation_player.play("show_action_container")
+	yield(ui_animation_player, "animation_finished")
 	# sets the current action that you selected
 	action_choice = action
 	# triggers _on_TargetsSelected() in units.gd

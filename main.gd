@@ -103,7 +103,7 @@ func _on_targetPhase_begin() -> void:
 		for player in players.get_children():
 			if player.action_choice.name == "Miss":
 				player.emit_signal("target_selected", null)
-				# activates the targeted tween and sets target_selected variable
+				# sets target_selected variable
 				player.set_target_selected(true)
 #		waits until all players have selected targets before moving on
 		yield(units, "targets_selected")
