@@ -71,48 +71,60 @@ current = true
 fov = 47.0
 size = 4569.59
 
-[node name="Floor" type="CSGBox" parent="."]
-transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 11.8346, 1.27416, -13.6729, -1.04245 )
+[node name="DiceBox" type="Node" parent="."]
+
+[node name="Floor" type="CSGBox" parent="DiceBox"]
+transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 11.8346, -0.95692, -14, -1.65609 )
 visible = false
 use_collision = true
-width = 0.271326
-depth = 1.93121
+width = 0.23
+depth = 1.75
 
-[node name="Ceiling" type="CSGBox" parent="."]
-transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 11.8346, 1.27416, 40.9272, -1.04245 )
+[node name="Ceiling" type="CSGBox" parent="DiceBox"]
+transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 11.8346, -0.936159, 39.9407, -2.06308 )
+visible = false
 use_collision = true
-width = 0.271326
-depth = 1.93121
+width = 0.23
+depth = 1.75
 
-[node name="EastWall" type="CSGBox" parent="."]
-transform = Transform( -9.14677e-07, -0.552355, 0, 19.1138, -2.2054e-08, 0, 0, 0, 13.2053, 10.2324, 3.3919, 2.58465 )
+[node name="EastWall" type="CSGBox" parent="DiceBox"]
+transform = Transform( -9.14677e-07, -0.552355, 0, 19.1138, -2.2054e-08, 0, 0, 0, 13.2053, 10.2324, 12.9372, -1.69661 )
+visible = false
 use_collision = true
 collision_layer = 2
-width = 4.163
+width = 2.75
+depth = 1.3
 material = SubResource( 1 )
 
-[node name="WestWall" type="CSGBox" parent="."]
-transform = Transform( -1.65596e-06, -1, 0, 37.8839, -4.37114e-08, 0, 0, 0, 13.2053, -11.4825, -9.78817, 2.50165 )
+[node name="WestWall" type="CSGBox" parent="DiceBox"]
+transform = Transform( -1.65596e-06, -1, 0, 37.8839, -4.37114e-08, 0, 0, 0, 13.2053, -11.4825, 13.0446, -1.69804 )
+visible = false
 use_collision = true
 collision_layer = 2
-width = 2.616
+width = 1.37
+depth = 1.3
 material = SubResource( 2 )
 
-[node name="SouthWall" type="CSGBox" parent="."]
-transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, 1.73453, -9.78817, 7.87633 )
+[node name="SouthWall" type="CSGBox" parent="DiceBox"]
+transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, -0.962455, 13.0716, 7.91478 )
+visible = false
 use_collision = true
 collision_layer = 2
-width = 2.616
+width = 1.37
+depth = 1.75
 material = SubResource( 3 )
 
-[node name="NorthWall" type="CSGBox" parent="."]
-transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, 2.03967, -10.0205, -11.5207 )
+[node name="NorthWall" type="CSGBox" parent="DiceBox"]
+transform = Transform( 7.23843e-14, 4.37114e-08, 13.2053, 37.8839, -4.37114e-08, 0, 1.65596e-06, 1, -5.77222e-07, -0.978501, 13.0046, -11.257 )
+visible = false
 use_collision = true
 collision_layer = 2
-width = 2.616
+width = 1.37
+depth = 1.75
 material = SubResource( 4 )
 
 [node name="Reroll" type="Button" parent="."]
+visible = false
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
