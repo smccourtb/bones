@@ -9,6 +9,7 @@ class_name Battler
 #					characters action choice is a "Miss"
 # 				 B) when _on_RollSet() is triggered in enemy_units.gd
 signal action_selected(who) # player = true | enemy = false
+
 # connected to: units.gd - during _setup_player and _setup_enemy
 # triggered when A) a player character is a current_attacker(units.gd) and player
 #					clicks on a valid target

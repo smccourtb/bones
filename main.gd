@@ -18,6 +18,8 @@ onready var units = $UI/Units
 onready var players = $UI/Units/HBoxContainer/PlayerBattlers
 onready var enemies = $UI/Units/HBoxContainer/EnemyBattlers
 onready var reroll_button = $UI/Reroll
+onready var end_phase_button = $UI/EndPhase
+onready var undo_button = $UI/Undo
 onready var win_message = $UI/WinMessage
 
 
@@ -36,7 +38,6 @@ func setup_signals() -> void:
 
 func _ready() -> void:
 	setup_signals()
-	
 	reroll_button.set_text("%s (%s)" % [tr("LABEL_REROLL"), str(rerolls)])
 	win_message.set_text(tr("LABEL_WIN_MESSAGE"))
 	
@@ -50,9 +51,14 @@ func _physics_process(_delta: float) -> void:
 	# debugging purposes. Updates the phase and whose turn it is
 	units.turn_label.text = "Player Turn" if turn_owner else "Enemy Turn"
 	units.phase_label.text = "Phase: " + Global.get_turn_phase_name()
+	end_phase_button.set_text("End %s Phase" % [Global.get_turn_phase_name().to_lower().capitalize()])
 	
 	# hides button unless its players roll phase
 	reroll_button.visible = Global.turn_phase == Global.TurnPhase.ROLL and turn_owner
+	if Global.turn_phase == Global.TurnPhase.ROLL:
+		end_phase_button.set_disabled(!check_if_die_done_rolling())
+	if not turn_owner:
+		end_phase_button.set_disabled(true)
 
 
 func set_reroll(amount) -> void:
@@ -112,10 +118,6 @@ func _on_targetPhase_begin() -> void:
 	if not turn_owner:
 #		for enemies, loop through all of them and for the ones that have not
 #		missed choose a random target
-
-#		the variable target_selected in enemy doesn't seem to matter because of
-#		as of right now, 12/6/21, an enemy can roll a miss and all is well with
-#		the world. Hm.
 		for enemy in enemies.get_children():
 #			it doesnt matter if they roll a miss or not. its handled inside the
 #			function choose_target() AND set_enemy_target(). It doesn't matter
@@ -250,3 +252,25 @@ func _on_Reroll_pressed() -> void:
 		yield(get_tree().create_timer(.1), "timeout")
 		die.set_physics_process(true)
 		
+func check_if_die_done_rolling():
+	for i in players.get_children():
+		if not is_instance_valid(i.die) or i.die.stopped:
+			return true
+	return false
+
+func _on_EndPhase_pressed() -> void:
+	var turn_phase = Global.get_turn_phase_name()
+	if turn_phase == "ROLL": # and all die have "stopped"
+		# check all players if they have selected an action
+		# if not set the selection
+		for i in players.get_children():
+			if not i.action_choice:
+				i.die.emit_signal("die_selected", i.die.actions[i.die.roll])
+	elif turn_phase == "TARGET":
+		emit_signal("target_phase_end")
+	elif turn_phase == "COMBAT":
+		emit_signal("combat_phase_begin")
+
+
+func _on_Undo_pressed() -> void:
+	pass # Replace with function body.

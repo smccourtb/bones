@@ -21,7 +21,8 @@ onready var six = $"6"
 
 var roll: int  # the side the die landed on
 var actions: Dictionary # die actions: 6 in total. keys correspond to face number
-
+var stopped: bool = false
+ 
 func _ready() -> void:
 	set_physics_process(true)
 	connect("stopped", self, "_on_Stopped")
@@ -54,6 +55,7 @@ func _on_Stopped():
 		connect("input_event", self, "_on_CharacterDie_input_event")
 		connect("mouse_entered", self, "_on_CharacterDie_mouse_entered")
 		connect("mouse_exited", self, "_on_CharacterDie_mouse_exited")
+	stopped = true
 	emit_signal("roll_set", actions[roll])
 
 
@@ -78,6 +80,8 @@ func reset():
 	angular_velocity = Vector3(0,0,3)
 	translation = Vector3(0, 24, 0)
 	scale = Vector3.ONE
+	stopped = false
+	roll = 0
 
 
 func _on_CharacterDie_mouse_entered() -> void:
