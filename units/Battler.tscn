@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://assets/ui/health_icon.png" type="Texture" id=1]
+[ext_resource path="res://assets/ui/stats-icons.png" type="Texture" id=2]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=3]
 [ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/defense_icon.png" type="Texture" id=5]
@@ -13,6 +14,45 @@ resource_local_to_scene = true
 flags = 16
 atlas = ExtResource( 3 )
 region = Rect2( 472, 264, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 16
+atlas = ExtResource( 2 )
+region = Rect2( 120, 8, 8, 8 )
+
+[sub_resource type="Animation" id=6]
+resource_name = "clicked"
+length = 0.05
+step = 0.025
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.025, 0.05 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+resource_name = "current_attacker"
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/ActionContainer:rect_position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 45, 15 ), Vector2( 49, 15 ), Vector2( 45, 15 ), Vector2( 43, 15 ) ]
+}
 
 [sub_resource type="Animation" id=5]
 resource_name = "defense_changed"
@@ -111,6 +151,90 @@ tracks/1/keys = {
 "values": [ true ]
 }
 
+[sub_resource type="Animation" id=9]
+resource_name = "targeted"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/Targeted:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 40, 20 ), Vector2( 42, 20 ), Vector2( 37, 20 ), Vector2( 35, 20 ), Vector2( 37, 20 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=10]
+resource_name = "targeted_hide"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/Targeted:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1e-05, 1e-05 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.1 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=11]
+resource_name = "targeted_show"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/Targeted:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1e-05, 1e-05 ), Vector2( 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BattlerContainer/Targeted:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
 [node name="Battler" type="Control"]
 rect_pivot_offset = Vector2( 24, 24 )
 mouse_filter = 2
@@ -123,6 +247,7 @@ __meta__ = {
 [node name="BattlerContainer" type="NinePatchRect" parent="."]
 margin_right = 48.0
 margin_bottom = 48.0
+rect_pivot_offset = Vector2( 24, 24 )
 mouse_filter = 0
 mouse_default_cursor_shape = 2
 texture = SubResource( 1 )
@@ -207,13 +332,14 @@ __meta__ = {
 }
 
 [node name="ActionContainer" type="NinePatchRect" parent="BattlerContainer"]
+show_behind_parent = true
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 margin_left = -3.0
 margin_top = -9.0
-margin_right = 15.0
+margin_right = 15.0005
 margin_bottom = 9.0
 rect_min_size = Vector2( 18, 18 )
 rect_scale = Vector2( 1e-05, 1e-05 )
@@ -239,21 +365,40 @@ margin_right = 8.0
 margin_bottom = 8.0
 mouse_filter = 2
 
-[node name="Targeted" type="TextureRect" parent="BattlerContainer/ActionContainer"]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="Targeted" type="TextureRect" parent="BattlerContainer"]
+visible = false
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -8.0
+margin_top = -4.0
+margin_bottom = 4.0
+rect_pivot_offset = Vector2( 4, 4 )
 mouse_filter = 2
+texture = SubResource( 8 )
+flip_h = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Tween" type="Tween" parent="."]
 
 [node name="Action" type="Tween" parent="."]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/clicked = SubResource( 6 )
+anims/current_attacker = SubResource( 7 )
 anims/defense_changed = SubResource( 5 )
 anims/grow_battler = SubResource( 2 )
 anims/health_changed = SubResource( 4 )
 anims/show_action_container = SubResource( 3 )
+anims/targeted = SubResource( 9 )
+anims/targeted_hide = SubResource( 10 )
+anims/targeted_show = SubResource( 11 )
 
 [connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
+[connection signal="mouse_entered" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_entered"]
+[connection signal="mouse_exited" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_exited"]
 
 [editable path="BattlerContainer/Human"]

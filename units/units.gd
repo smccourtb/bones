@@ -4,12 +4,12 @@ extends Control
 # TODO: die colors should be moved into character_unit.gd and the parameter
 #		removed from the initialize functions
 const die_colors: Dictionary = {
-	"1": Color8(160, 178, 200), # blue
-	"2": Color8(156, 195, 150), # green 
-	"3": Color8(177, 155, 190), # purple
-	"4": Color8(204, 144, 141), # red
-	"5": Color8(224, 203, 121), # yellow
-	"Enemy": Color8(207,155,93) # enemy
+	"1": Color8(67, 119, 134), # blue
+	"2": Color8(92, 129, 64), # green 
+	"3": Color8(87, 71, 122), # purple
+	"4": Color8(142, 52, 76), # red
+	"5": Color8(171, 94, 23), # yellow
+	"Enemy": Color8(140,54,28) # enemy
 }
 
 const ui_colors: Dictionary = {
@@ -53,7 +53,7 @@ func _ready() -> void:
 	# setup the EnemyUnits.tscn
 	_setup_enemies()
 	# store a list of all character (unit) nodes
-	# unit_refs = players + enemies
+	unit_refs = players + enemies
 	connect("target_picked", self, "_on_TargetsPicked")
 
 
@@ -165,6 +165,7 @@ func _on_TargetsPicked() -> void:
 
 # TODO: add 'who' type
 func _on_TargetSelected(who) -> void:
+	
 	# used to trigger target selection
 	# only used on player target phase
 	if who:
@@ -176,7 +177,9 @@ func _on_TargetSelected(who) -> void:
 		# this is necessary for the _on_CharacterDisplay_gui_input() in character_unit.gd
 		set_current_attacker(null)
 	# sets any units that were targetable to false and stops the corresponding animation
+	print("?????????")
 	for unit in unit_refs:
+		print("WHATY THE FUCK SHOULD BE DISAAPEARING RIGHTN OW")
 		unit.set_targetable(false)
 	# triggers _on_TargetsPicked() that keeps track of when to call targets_selected
 	# signal to change the phase to combat

@@ -28,6 +28,7 @@ var target = null
 var targetable: bool = false
 # used to set the die color
 var color: Color
+var ui_color: String
 # unused variable that was used for death of a character but remains if I
 # implement status effects and need a disable toggle (sleep)
 var disabled: bool = false
@@ -48,7 +49,7 @@ onready var stat_container = $BattlerContainer/StatContainer
 # the square the slides out from behind battler_container when an action is chosen
 onready var action_container = $BattlerContainer/ActionContainer
 # red recticle that grows and shrinks when targeted
-onready var target_indicator = $BattlerContainer/ActionContainer/Targeted
+onready var target_indicator = $BattlerContainer/Targeted
 # ui animation player
 onready var ui_animation_player = $AnimationPlayer
 
@@ -60,10 +61,9 @@ func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	# into this script so i dont have to pass a separate variable.
 	# this is the one to move into something else
 	color = die_color
+	self.ui_color = ui_color
 	# this is here so they can load dynamically. 
-	battler_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	# character_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
-	# action_container.texture.atlas = load("res://assets/ui/panels_" + ui_color + ".png")
+	battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))
 	# trying to implement setters and getters for things so they are more clean
 	set_health(data.health)
 	set_defense(data.defense)
@@ -161,24 +161,28 @@ func get_possible_targets():
 func set_targetable(value: bool) -> void:
 #	a player is picking a target and the character is targetable
 	targetable = value
+	if value:
+		print("YO")
+		ui_animation_player.play("targeted_show")
+		yield(ui_animation_player, "animation_finished")
+		ui_animation_player.play("targeted")
+	else:
+		print("SHOULLD BE HIDING")
+		ui_animation_player.stop()
+		ui_animation_player.play("targeted_hide")
 
 
 func set_current_attacker(new_value: bool):
 	# Sets node to be current attacker
 	if new_value:
-		# slides the character display forward a bit
-		tween.interpolate_property(battler_container, "rect_position",
-		null, Vector2(battler_container.rect_position.x+10, battler_container.rect_position.y), .3,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		ui_animation_player.play("current_attacker")
+		battler_container.set_texture(load("res://assets/ui/active_" + ui_color + ".png"))
 		get_possible_targets()
-	
 	else:
-		# slides it back
-		tween.interpolate_property(battler_container, "rect_position",
-		null, Vector2(battler_container.rect_position.x-10, battler_container.rect_position.y), .3,
-		Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	tween.start()
-
+		ui_animation_player.seek(0, true)
+		ui_animation_player.stop()
+		battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))
+		
 
 func action():
 	# this function will get bigger and more detailed in the future. the perform
@@ -203,6 +207,7 @@ func reset():
 	set_target(false)
 	# removes texture from action_container
 	action_choice_texture.set_texture(null)
+	ui_animation_player.play_backwards("show_action_container")
 
 
 func action_tween_start() -> void:
@@ -240,8 +245,23 @@ func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
 				if attacker == self  and (action_choice.name == 'Miss' or target):
 					return
 				if not attacker and (action_choice.name == 'Miss' or target):
-					return
+					print(battler_container.is_connected("mouse_entered",self, "_on_BattlerContainer_mouse_entered"))
 				if attacker and not attacker.action_choice.name == 'Miss':
+					print("TARGET SELECTED")
 					emit_signal("target_selected", self)
 				elif not attacker and not action_choice.name == 'Miss':
+					ui_animation_player.play("clicked")
+					yield(ui_animation_player, "animation_finished")
 					get_parent().get_parent().get_parent().set_current_attacker(self)
+
+func _on_BattlerContainer_mouse_entered() -> void:
+	SFX.play(preload("res://assets/sounds/ui/button_hover.wav"))
+#	if not Global.turn_phase == Global.TurnPhase.COMBAT:
+#		ui_animation_player.play("grow_battler")
+	battler_container.set_texture(load("res://assets/ui/active_" + ui_color + ".png"))
+
+func _on_BattlerContainer_mouse_exited() -> void:
+	if get_parent().get_parent().get_parent().current_attacker != self:
+#	if not Global.turn_phase == Global.TurnPhase.COMBAT:
+#		ui_animation_player.play_backwards("grow_battler")
+		battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))
