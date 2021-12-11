@@ -20,8 +20,9 @@ func roll_die():
 func _on_Selected(action: Action):
 	# called as a player only. Enemy units do not use this, they use _on_RollSet()
 	# called when a player clicks on their die on roll phase
-	player_die = remove_child(die)
 	die.disappear()
+	player_die = remove_child(die)
+	
 	
 	
 	action_choice_texture.set_texture(action.texture)

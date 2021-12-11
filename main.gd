@@ -70,7 +70,6 @@ func _physics_process(_delta: float) -> void:
 			undo_button.set_disabled(true)
 		else:
 			undo_button.set_disabled(false)
-			
 
 
 func set_reroll(amount) -> void:
@@ -182,7 +181,6 @@ func _on_combatPhase_begin() -> void:
 				character.action()
 				yield(get_tree().create_timer(1.0), "timeout")
 				# slides both characters back to their original spots
-				# THAT FIRST BUG YOU FOUND COULD BE IN HERE
 				character.action_tween_end()
 				character.target.action_tween_end()
 				yield(get_tree().create_timer(1.5), "timeout")

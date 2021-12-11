@@ -56,6 +56,7 @@ onready var ui_animation_player = $AnimationPlayer
 
 onready var health_icon_label = $BattlerContainer/StatContainer/HealthContainer/HealthIcon/HeathLabel
 onready var action_choice_texture = $BattlerContainer/ActionContainer/ActionChoice
+onready var target_chosen_indicator = $BattlerContainer/ActionContainer/TargetChosenIndicator
 
 func initialize(data: Character, die_color: Color, ui_color: String) -> void:
 	# TODO: i think i can move the color dictionaries, the one with the codes
@@ -115,7 +116,11 @@ func update_defense_ui():
 
 func set_target_selected(value: bool):
 	target_selected = value
-
+	if value:
+		target_chosen_indicator.visible = true
+	else:
+		target_chosen_indicator.visible = false
+		
 
 func set_target(new_target):
 	# setter function for battler target.
@@ -123,8 +128,8 @@ func set_target(new_target):
 		target = new_target
 		set_target_selected(true)
 	else:
-		print('should be in here')
 		target = null
+		
 		set_target_selected(false)
 
 
