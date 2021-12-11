@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://units/enemy_battler.gd" type="Script" id=1]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=2]
 [ext_resource path="res://units/Battler.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/characters/human/human_base-idle.png" type="Texture" id=4]
 
 [sub_resource type="AtlasTexture" id=1]
 resource_local_to_scene = true
@@ -27,7 +28,9 @@ margin_right = 0.0
 texture = SubResource( 1 )
 
 [node name="Human" parent="BattlerContainer" index="0"]
+texture = ExtResource( 4 )
 flip_h = true
+hframes = 16
 
 [node name="ActionContainer" parent="BattlerContainer" index="2"]
 anchor_left = 0.0

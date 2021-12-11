@@ -264,7 +264,6 @@ stretch_mode = 6
 [node name="HeathLabel" type="Label" parent="BattlerContainer/StatContainer/HealthContainer/HealthIcon"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1.0
 text = "1"
 align = 2
 valign = 2
@@ -292,7 +291,6 @@ stretch_mode = 5
 [node name="DefenseLabel" type="Label" parent="BattlerContainer/StatContainer/DefenseContainer/DefenseIcon"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1.0
 text = "10"
 align = 2
 valign = 2
@@ -369,5 +367,7 @@ anims/targeted_show = SubResource( 10 )
 [connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]
 [connection signal="mouse_entered" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_entered"]
 [connection signal="mouse_exited" from="BattlerContainer" to="." method="_on_BattlerContainer_mouse_exited"]
+[connection signal="mouse_entered" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_entered"]
+[connection signal="mouse_exited" from="BattlerContainer/ActionContainer" to="." method="_on_ActionContainer_mouse_exited"]
 
 [editable path="BattlerContainer/Human"]

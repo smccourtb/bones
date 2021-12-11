@@ -161,11 +161,11 @@ func get_possible_targets():
 func set_targetable(value: bool) -> void:
 #	a player is picking a target and the character is targetable
 	targetable = value
-	if value:
+	if value and not get_parent().get_parent().get_parent().current_attacker == self: 
 		ui_animation_player.play("targeted_show")
 		yield(ui_animation_player, "animation_finished")
 		ui_animation_player.play("targeted")
-	else:
+	elif not value and not get_parent().get_parent().get_parent().current_attacker == self:
 		ui_animation_player.stop()
 		ui_animation_player.play_backwards("targeted_show")
 		yield(ui_animation_player, "animation_finished")
@@ -179,8 +179,8 @@ func set_current_attacker(new_value: bool):
 		battler_container.set_texture(load("res://assets/ui/active_" + ui_color + ".png"))
 		get_possible_targets()
 	else:
-#		ui_animation_player.seek(0, true)
-#		ui_animation_player.stop()
+		ui_animation_player.seek(0, true)
+		ui_animation_player.stop()
 		battler_container.set_texture(load("res://assets/ui/deactive_" + ui_color + ".png"))
 		
 
@@ -226,13 +226,18 @@ func action_tween_end() -> void:
 
 func _on_ActionContainer_mouse_entered() -> void:
 	# on mouse over of action container, display characters targets
-	pass
+	if target:
+		target.ui_animation_player.play("targeted_show")
+#		yield(ui_animation_player, "animation_finished")
+		target.ui_animation_player.play("targeted")
+		
 
 
 func _on_ActionContainer_mouse_exited() -> void:
 	# stop the target recticle
-	pass
-
+	if target:
+		target.ui_animation_player.play_backwards("targeted_show")
+		yield(ui_animation_player, "animation_finished")
 
 func _on_BattlerContainer_gui_input(event: InputEvent) -> void:
 	var attacker: Control = get_parent().get_parent().get_parent().current_attacker

@@ -18,8 +18,4 @@ script = ExtResource( 1 )
 [node name="BattlerContainer" parent="." index="0"]
 texture = SubResource( 1 )
 
-[node name="Targeted" parent="BattlerContainer" index="3"]
-visible = true
-rect_scale = Vector2( 1e-05, 1e-05 )
-
 [editable path="BattlerContainer/Human"]
