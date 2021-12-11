@@ -106,6 +106,8 @@ func get_defense() -> int:
 
 
 func update_defense_ui():
+	ui_animation_player.play("defense_changed")
+	
 	var defense_label = stat_container.get_node("DefenseContainer/DefenseIcon/DefenseLabel")
 	defense_label.set_text(str(get_defense()))
 
@@ -116,7 +118,6 @@ func set_target_selected(value: bool):
 
 func set_target(new_target):
 	# setter function for battler target.
-	# set target selected plays some animations and disconnects mouse over signals
 	if new_target:
 		target = new_target
 		set_target_selected(true)
