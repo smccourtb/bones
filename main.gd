@@ -55,16 +55,22 @@ func _physics_process(_delta: float) -> void:
 	
 	# hides button unless its players roll phase
 	reroll_button.visible = Global.turn_phase == Global.TurnPhase.ROLL and turn_owner
-	if Global.turn_phase == Global.TurnPhase.ROLL:
-		end_phase_button.set_disabled(!check_if_die_done_rolling())
-	if not turn_owner:
-		end_phase_button.set_disabled(true)
-		undo_button.set_disabled(true)
-	if units.action_stack.empty():
-		undo_button.set_disabled(true)
-	else:
-		undo_button.set_disabled(false)
+	end_phase_button.visible = Global.turn_phase != Global.TurnPhase.COMBAT
+	undo_button.visible = Global.turn_phase != Global.TurnPhase.COMBAT
 	
+	if Global.turn_phase == Global.TurnPhase.ROLL and turn_owner:
+		end_phase_button.set_disabled(!check_if_die_done_rolling())
+		if not turn_owner:
+			end_phase_button.set_disabled(true)
+			undo_button.set_disabled(true)
+		if units.action_stack.empty():
+			undo_button.set_disabled(true)
+	if Global.turn_phase == Global.TurnPhase.TARGET and turn_owner:
+		if units.target_stack.empty():
+			undo_button.set_disabled(true)
+		else:
+			undo_button.set_disabled(false)
+			
 
 
 func set_reroll(amount) -> void:
@@ -118,8 +124,8 @@ func _on_targetPhase_begin() -> void:
 				# sets target_selected variable
 				player.set_target_selected(true)
 #		waits until all players have selected targets before moving on
-		yield(units, "targets_selected")
-		emit_signal("target_phase_end")
+#		yield(units, "targets_selected")
+#		emit_signal("target_phase_end")
 	
 	if not turn_owner:
 #		for enemies, loop through all of them and for the ones that have not
@@ -211,6 +217,8 @@ func _on_combatPhase_end() -> void:
 	units.enemy_actions_selected = 0
 	units.player_actions_selected = 0
 	units.player_targets_selected = 0
+	units.action_stack = []
+	units.target_stack = []
 	
 #	reset each unit (character) on both sides so they get set back to the
 #	beginning of combat state.
@@ -274,13 +282,19 @@ func _on_EndPhase_pressed() -> void:
 				i.die.emit_signal("die_selected", i.die.actions[i.die.roll])
 	elif turn_phase == "TARGET":
 		emit_signal("target_phase_end")
-	elif turn_phase == "COMBAT":
-		emit_signal("combat_phase_begin")
 
 
 func _on_Undo_pressed() -> void:
-	var x = units.action_stack.pop_back()
-	units.player_actions_selected -= 1
-	x.ui_animation_player.play_backwards("show_action_container")
-	x.add_child(x.die)
-	x.die.set_scale(Vector3(1,1,1))
+	if Global.turn_phase == Global.TurnPhase.ROLL:
+		var x = units.action_stack.pop_back()
+		units.player_actions_selected -= 1
+		x.ui_animation_player.play_backwards("show_action_container")
+		x.action_choice = null
+		x.add_child(x.die)
+		x.die.set_scale(Vector3(1,1,1))
+	elif Global.turn_phase == Global.TurnPhase.TARGET:
+		var x = units.target_stack.pop_back()
+		units.player_targets_selected -= 1
+		x.set_target(false)
+		
+		

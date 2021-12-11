@@ -172,6 +172,8 @@ func _on_TargetSelected(who) -> void:
 	# used to trigger target selection
 	# only used on player target phase
 	if who:
+		target_stack.push_back(current_attacker)
+		
 		# sets target variable of character who is choosing the target to the 
 		# provided paramater
 		current_attacker.set_target(who)

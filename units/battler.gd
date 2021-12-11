@@ -123,6 +123,7 @@ func set_target(new_target):
 		target = new_target
 		set_target_selected(true)
 	else:
+		print('should be in here')
 		target = null
 		set_target_selected(false)
 
