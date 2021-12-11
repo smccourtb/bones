@@ -251,6 +251,7 @@ __meta__ = {
 margin_right = 24.0
 margin_bottom = 14.0
 rect_pivot_offset = Vector2( 12, 7 )
+mouse_filter = 2
 size_flags_horizontal = 3
 
 [node name="HealthIcon" type="TextureRect" parent="BattlerContainer/StatContainer/HealthContainer"]
@@ -258,6 +259,7 @@ margin_left = 5.0
 margin_right = 19.0
 margin_bottom = 14.0
 rect_min_size = Vector2( 14, 14 )
+mouse_filter = 2
 texture = ExtResource( 1 )
 stretch_mode = 6
 
@@ -276,6 +278,7 @@ margin_left = 24.0
 margin_right = 48.0
 margin_bottom = 14.0
 rect_pivot_offset = Vector2( 12, 7 )
+mouse_filter = 2
 size_flags_horizontal = 3
 
 [node name="DefenseIcon" type="TextureRect" parent="BattlerContainer/StatContainer/DefenseContainer"]
@@ -285,6 +288,7 @@ margin_bottom = 14.0
 grow_horizontal = 0
 grow_vertical = 0
 rect_min_size = Vector2( 14, 14 )
+mouse_filter = 2
 texture = ExtResource( 5 )
 stretch_mode = 5
 
