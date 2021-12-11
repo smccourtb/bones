@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://assets/ui/health_icon.png" type="Texture" id=1]
 [ext_resource path="res://assets/ui/panels_blue.png" type="Texture" id=3]
@@ -28,6 +28,33 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 1, 1 ), Vector2( 1.2, 1.2 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "health_changed"
+tracks/0/type = "value"
+tracks/0/path = NodePath("BattlerContainer/StatContainer/HealthContainer:rect_scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ), Vector2( 1.1, 1.1 ), Vector2( 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BattlerContainer/StatContainer/HealthContainer:rect_rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.3, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 7.5, -7.5, 0.0 ]
 }
 
 [sub_resource type="Animation" id=3]
@@ -102,6 +129,7 @@ __meta__ = {
 [node name="HealthContainer" type="CenterContainer" parent="BattlerContainer/StatContainer"]
 margin_right = 24.0
 margin_bottom = 14.0
+rect_pivot_offset = Vector2( 12, 7 )
 size_flags_horizontal = 3
 
 [node name="HealthIcon" type="TextureRect" parent="BattlerContainer/StatContainer/HealthContainer"]
@@ -194,6 +222,7 @@ mouse_filter = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/grow_battler = SubResource( 2 )
+anims/health_changed = SubResource( 4 )
 anims/show_action_container = SubResource( 3 )
 
 [connection signal="gui_input" from="BattlerContainer" to="." method="_on_BattlerContainer_gui_input"]

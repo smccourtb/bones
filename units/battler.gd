@@ -89,6 +89,7 @@ func get_health() -> int:
 
 
 func update_health_ui():
+	ui_animation_player.play("health_changed")
 	health_icon_label.set_text(str(get_health()))
 
 
