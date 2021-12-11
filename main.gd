@@ -36,7 +36,10 @@ func setup_signals() -> void:
 
 func _ready() -> void:
 	setup_signals()
-	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
+	
+	reroll_button.set_text("%s (%s)" % [tr("LABEL_REROLL"), str(rerolls)])
+	win_message.set_text(tr("LABEL_WIN_MESSAGE"))
+	
 	randomize()
 	# TODO: add an "{ begin / end } { current_phase } Phase" button to call this
 	#       and the other phases. One button for all logic.

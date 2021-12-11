@@ -102,6 +102,10 @@ debug={
  ]
 }
 
+[locale]
+
+translations=PoolStringArray( "res://locales/en.en.translation", "res://locales/pt.pt.translation" )
+
 [physics]
 
 common/enable_pause_aware_picking=true
