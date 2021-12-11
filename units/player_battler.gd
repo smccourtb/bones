@@ -2,7 +2,7 @@ extends Battler
 class_name Player
 
 
-
+var player_die
 
 
 func roll_die():
@@ -20,14 +20,17 @@ func roll_die():
 func _on_Selected(action: Action):
 	# called as a player only. Enemy units do not use this, they use _on_RollSet()
 	# called when a player clicks on their die on roll phase
+	player_die = remove_child(die)
 	die.disappear()
+	
+	
 	action_choice_texture.set_texture(action.texture)
 	ui_animation_player.play("show_action_container")
 	yield(ui_animation_player, "animation_finished")
 	# sets the current action that you selected
 	action_choice = action
 	# triggers _on_TargetsSelected() in units.gd
-	emit_signal("action_selected", true)
+	emit_signal("action_selected", self)
 
 
 func get_possible_targets():

@@ -102,4 +102,5 @@ func disappear():
 
 
 func _on_Disappear_tween_completed(_object: Object, _key: NodePath) -> void:
-	queue_free()
+#	queue_free()
+	pass

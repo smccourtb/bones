@@ -45,7 +45,8 @@ var player_actions_selected: int = 0
 var enemy_actions_selected: int = 0
 
 var current_attacker: Control
-
+var action_stack: = []
+var target_stack: = []
 
 func _ready() -> void:
 	# setup the CharacterUnits.tscn
@@ -143,10 +144,11 @@ func _setup_enemies() -> void:
 	enemies = enemy_units
 
 
-func _on_ActionSelected(who: bool) -> void:
+func _on_ActionSelected(who: Control) -> void:
 	# used to know when to trigger actions selected to trigger the next phase
 	# main.gd is listening on actions_selected function
 	if who:
+		action_stack.push_back(who)
 		player_actions_selected += 1
 		if player_actions_selected == player_count:
 			emit_signal("actions_selected")

@@ -59,6 +59,12 @@ func _physics_process(_delta: float) -> void:
 		end_phase_button.set_disabled(!check_if_die_done_rolling())
 	if not turn_owner:
 		end_phase_button.set_disabled(true)
+		undo_button.set_disabled(true)
+	if units.action_stack.empty():
+		undo_button.set_disabled(true)
+	else:
+		undo_button.set_disabled(false)
+	
 
 
 func set_reroll(amount) -> void:
@@ -67,7 +73,7 @@ func set_reroll(amount) -> void:
 	if rerolls <= 0:
 		reroll_button.set_disabled(true)
 		rerolls = 0
-	if amount > 2:
+	if get_reroll() + amount > 2:
 		rerolls = 2
 	reroll_button.set_text("Reroll (" + str(rerolls) + ")")
 	reroll_button.set_disabled(rerolls < 1)
@@ -273,4 +279,8 @@ func _on_EndPhase_pressed() -> void:
 
 
 func _on_Undo_pressed() -> void:
-	pass # Replace with function body.
+	var x = units.action_stack.pop_back()
+	units.player_actions_selected -= 1
+	x.ui_animation_player.play_backwards("show_action_container")
+	x.add_child(x.die)
+	x.die.set_scale(Vector3(1,1,1))
