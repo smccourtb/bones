@@ -101,6 +101,7 @@ func _on_rollPhase_begin() -> void:
 		for enemy in enemies.get_children():
 			if is_instance_valid(enemy):
 				enemy.roll_die()
+			else: continue
 
 
 func _on_rollPhase_end() -> void:
@@ -122,9 +123,6 @@ func _on_targetPhase_begin() -> void:
 				player.emit_signal("target_selected", null)
 				# sets target_selected variable
 				player.set_target_selected(true)
-#		waits until all players have selected targets before moving on
-#		yield(units, "targets_selected")
-#		emit_signal("target_phase_end")
 	
 	if not turn_owner:
 #		for enemies, loop through all of them and for the ones that have not
@@ -182,7 +180,8 @@ func _on_combatPhase_begin() -> void:
 				yield(get_tree().create_timer(1.0), "timeout")
 				# slides both characters back to their original spots
 				character.action_tween_end()
-				character.target.action_tween_end()
+				if is_instance_valid(character.target):
+					character.target.action_tween_end()
 				yield(get_tree().create_timer(1.5), "timeout")
 		
 		# swaps over to the enemy and starts combat phase over

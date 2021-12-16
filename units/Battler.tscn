@@ -5,7 +5,7 @@
 [ext_resource path="res://units/battler/battler_container.tres" type="Texture" id=3]
 [ext_resource path="res://scenes/HumanAnim.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/ui/defense_icon.png" type="Texture" id=5]
-[ext_resource path="res://assets/characters/human/human_base-attack.png" type="Texture" id=6]
+[ext_resource path="res://assets/characters/human/human_base-idle.png" type="Texture" id=6]
 [ext_resource path="res://assets/ui/action_choice_background.png" type="Texture" id=7]
 [ext_resource path="res://units/battler.gd" type="Script" id=8]
 [ext_resource path="res://assets/ui/gui-icons.png" type="Texture" id=9]
@@ -237,7 +237,7 @@ __meta__ = {
 position = Vector2( 8, 8 )
 texture = ExtResource( 6 )
 centered = false
-hframes = 4
+hframes = 16
 vframes = 4
 
 [node name="StatContainer" type="HBoxContainer" parent="BattlerContainer"]
